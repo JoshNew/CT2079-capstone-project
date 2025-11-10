@@ -1,0 +1,2237 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Events - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .back-btn, .create-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .back-btn:hover, .create-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .create-btn {
+            background: #10b981;
+        }
+
+        .create-btn:hover {
+            background: #059669;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Search Bar */
+        .search-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem;
+            display: none;
+        }
+
+        .clear-search-btn.show {
+            display: block;
+        }
+
+        .clear-search-btn:hover {
+            color: #667eea;
+        }
+
+        .search-results-count {
+            color: #666;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .search-results-count strong {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        /* Sort Controls */
+        .sort-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #e1e1e1;
+            margin-top: 1rem;
+        }
+
+        .sort-label {
+            color: #666;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .sort-select:hover {
+            border-color: #667eea;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Loading and Messages */
+        .loading, .error-message, .no-data {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            color: #e74c3c;
+        }
+
+        .no-data {
+            color: #666;
+        }
+
+        .success-banner {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .success-banner.show {
+            display: flex;
+        }
+
+        /* Events Grid */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-content {
+            padding: 1.5rem;
+        }
+
+        .organizer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .organizer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .organizer-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .organizer-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .organizer-label {
+            font-size: 0.7rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .organizer-name {
+            font-size: 0.85rem;
+            color: #555;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .event-location {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .event-datetime {
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .event-description {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            word-break: break-word;
+            cursor: help;
+        }
+
+        .event-description:hover {
+            color: #333;
+        }
+
+        .event-seats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .seat-info {
+            background: #f8f9fc;
+            padding: 0.5rem;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .seat-type {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .seat-price {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .seat-available {
+            font-size: 0.75rem;
+            color: #10b981;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #5568d3;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 800px;
+            width: 100%;
+            margin: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group.span-2 {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .seat-input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .image-preview-container {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .image-preview.show {
+            display: block;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .seat-input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-results-count {
+                text-align: center;
+                padding-top: 0.5rem;
+            }
+
+            .sort-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sort-select {
+                width: 100%;
+            }
+        }
+
+        /* Seat Viewer Modal */
+        .seat-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .seat-viewer-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .seat-viewer-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .seat-viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .seat-viewer-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .seat-viewer-close {
+            background: #f0f0f0;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .seat-viewer-close:hover {
+            background: #ef4444;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .seat-viewer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .seat-viewer-info-item {
+            text-align: center;
+        }
+
+        .seat-viewer-info-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .seat-viewer-info-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .seat-viewer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 0.75rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .viewer-seat {
+            aspect-ratio: 1;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .viewer-seat.available {
+            background: white;
+            border-color: #10b981;
+        }
+
+        .viewer-seat.available:hover {
+            transform: scale(1.05);
+            border-color: #059669;
+        }
+
+        .viewer-seat.booked {
+            background: #fee;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+
+        .seat-viewer-legend {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            padding: 1rem;
+            background: #f8f9fc;
+            border-radius: 8px;
+        }
+
+        .viewer-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .viewer-legend-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #e1e1e1;
+        }
+
+        .viewer-legend-box.available {
+            background: white;
+            border-color: #10b981;
+        }
+
+        .viewer-legend-box.booked {
+            background: #fee;
+            border-color: #ef4444;
+        }
+
+        .seat-viewer-loading {
+            text-align: center;
+            padding: 3rem;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        /* Make seat info clickable */
+        .seat-info {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .seat-info:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .seat-info:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .seat-viewer-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .seat-viewer-grid {
+                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+
+            .viewer-seat {
+                font-size: 0.75rem;
+            }
+
+            .seat-viewer-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Delete Event Confirmation Modal */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .delete-modal.active {
+            display: flex;
+        }
+
+        .delete-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .delete-modal-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+            animation: iconPulse 0.5s ease;
+        }
+
+        .delete-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .delete-modal-event-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f0f4ff;
+            border-radius: 6px;
+        }
+
+        .delete-modal-message {
+            color: #666;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .delete-modal-warning {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .delete-modal-warning-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .delete-modal-warning-text {
+            color: #991b1b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .delete-modal-admin-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .delete-modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .delete-modal-btn {
+            flex: 1;
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-modal-btn-cancel {
+            background: #f1f3f5;
+            color: #495057;
+        }
+
+        .delete-modal-btn-cancel:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .delete-modal-btn-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .delete-modal-btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .delete-modal-btn-delete:active {
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes iconPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .delete-modal-content {
+                margin: 1rem;
+            }
+
+            .delete-modal-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Error Dialog */
+        .error-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            text-align: center;
+            min-width: 350px;
+            max-width: 500px;
+            animation: errorSlideIn 0.3s ease-out;
+        }
+
+        .error-dialog.active {
+            display: block;
+        }
+
+        @keyframes errorSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .error-dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2999;
+        }
+
+        .error-dialog-overlay.active {
+            display: block;
+        }
+
+        .error-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: #fee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            animation: errorPulse 0.5s ease-out;
+        }
+
+        @keyframes errorPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .error-icon-circle svg {
+            width: 45px;
+            height: 45px;
+            color: #dc3545;
+        }
+
+        .error-dialog-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-dialog-message {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .error-dialog-btn {
+            background: #dc3545;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .error-dialog-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo" id="pageTitle">Manage Events</div>
+        <div class="header-actions">
+            <button class="create-btn" id="createEventBtn" onclick="openCreateModal()" style="display: none;">+ Create Event</button>
+            <a href="#" id="backBtn" class="back-btn">⬅ Back to Dashboard</a>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="page-header">
+        <h1 class="page-title" id="headerTitle">My Events</h1>
+        <p class="page-subtitle" id="headerSubtitle">Create and manage your events</p>
+    </div>
+
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input
+                        type="text"
+                        id="searchInput"
+                        class="search-input"
+                        placeholder="Search events by name, location, category, or description..."
+                        oninput="searchEvents()"
+                >
+                <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()">X</button>
+            </div>
+            <div class="search-results-count" id="searchResultsCount">
+                <strong id="resultCount">0</strong> events
+            </div>
+        </div>
+
+        <!-- Sort Controls -->
+        <div class="sort-controls">
+            <span class="sort-label">Sort by:</span>
+            <select id="sortBy" class="sort-select" onchange="applySorting()">
+                <option value="createdAt">Date Created</option>
+                <option value="eventDate">Event Date</option>
+            </select>
+
+            <select id="sortOrder" class="sort-select" onchange="applySorting()">
+                <option value="desc">Newest First</option>
+                <option value="asc">Oldest First</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="successBanner" class="success-banner">
+        <span id="successMessage"></span>
+        <button class="close-banner" onclick="hideSuccessBanner()" style="background: none; border: none; color: #155724; font-size: 1.5rem; cursor: pointer;">X</button>
+    </div>
+
+    <div id="loadingMessage" class="loading">
+        Loading events...
+    </div>
+
+    <div id="errorMessage" class="error-message" style="display: none;">
+        <strong>Error:</strong> <span id="errorText">Unable to load events.</span>
+        <br><br>
+        <button class="btn btn-primary" onclick="loadEvents()">Retry</button>
+    </div>
+
+    <div id="noDataMessage" class="no-data" style="display: none;">
+        <span id="noDataText">No events found. Create your first event!</span>
+    </div>
+
+    <div id="eventsGrid" class="events-grid" style="display: none;">
+        <!-- Event cards will be inserted here -->
+    </div>
+</main>
+
+<!-- Create/Edit Event Modal -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Create Event</h3>
+        </div>
+        <form id="eventForm">
+            <div class="form-grid">
+                <div class="form-group span-2">
+                    <label for="eventName">Event Name *</label>
+                    <input type="text" id="eventName" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Location *</label>
+                    <input type="text" id="eventLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Category *</label>
+                    <select id="eventCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="Concert">Concert</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Theater">Theater</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Cultural events">Cultural events</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Event Date *</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTime">Event Time *</label>
+                    <input type="time" id="eventTime" required>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="eventDescription">Description</label>
+                <textarea id="eventDescription" rows="4" maxlength="500" oninput="updateCharCount()"></textarea>
+                <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 0.3rem;">
+                    <span id="charCount">0</span>/500 characters
+                </small>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Seat Types & Pricing</label>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.9rem; color: #667eea;">VIP Seats</label>
+                    <div class="seat-input-group">
+                        <input type="number" id="vipSeats" placeholder="Number of seats" min="0">
+                        <input type="number" id="vipPrice" placeholder="Price ($)" min="0" step="0.01">
+                    </div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.9rem; color: #667eea;">Standard Seats</label>
+                    <div class="seat-input-group">
+                        <input type="number" id="standardSeats" placeholder="Number of seats" min="0">
+                        <input type="number" id="standardPrice" placeholder="Price ($)" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.9rem; color: #667eea;">Concession Seats</label>
+                    <div class="seat-input-group">
+                        <input type="number" id="concessionSeats" placeholder="Number of seats" min="0">
+                        <input type="number" id="concessionPrice" placeholder="Price ($)" min="0" step="0.01">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="eventImage">Event Image</label>
+                <input type="file" id="eventImage" accept="image/*" onchange="previewEventImage(event)">
+                <div class="image-preview-container">
+                    <img id="imagePreview" class="image-preview" alt="Event preview">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">Save Event</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEventModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="seatViewerModal" class="seat-viewer-modal">
+    <div class="seat-viewer-content">
+        <div class="seat-viewer-header">
+            <h2 class="seat-viewer-title" id="seatViewerTitle">VIP Seats</h2>
+            <button class="seat-viewer-close" onclick="closeSeatViewer()">X</button>
+        </div>
+
+        <div class="seat-viewer-info">
+            <div class="seat-viewer-info-item">
+                <div class="seat-viewer-info-label">Total Seats</div>
+                <div class="seat-viewer-info-value" id="viewerTotalSeats">0</div>
+            </div>
+            <div class="seat-viewer-info-item">
+                <div class="seat-viewer-info-label">Available</div>
+                <div class="seat-viewer-info-value" id="viewerAvailableSeats" style="color: #10b981;">0</div>
+            </div>
+            <div class="seat-viewer-info-item">
+                <div class="seat-viewer-info-label">Booked</div>
+                <div class="seat-viewer-info-value" id="viewerBookedSeats" style="color: #ef4444;">0</div>
+            </div>
+            <div class="seat-viewer-info-item">
+                <div class="seat-viewer-info-label">Price</div>
+                <div class="seat-viewer-info-value" id="viewerPrice">$0.00</div>
+            </div>
+        </div>
+
+        <div id="seatViewerLoading" class="seat-viewer-loading">
+            Loading seat information...
+        </div>
+
+        <div id="seatViewerGrid" class="seat-viewer-grid" style="display: none;">
+            <!-- Seats will be dynamically added here -->
+        </div>
+
+        <div class="seat-viewer-legend">
+            <div class="viewer-legend-item">
+                <div class="viewer-legend-box available"></div>
+                <span>Available</span>
+            </div>
+            <div class="viewer-legend-item">
+                <div class="viewer-legend-box booked"></div>
+                <span>Booked</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Event Confirmation Modal -->
+<div id="deleteModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <div class="delete-modal-icon">🗑️</div>
+        <h2 class="delete-modal-title">
+            Delete Event
+            <span id="deleteAdminBadge" class="delete-modal-admin-badge" style="display: none;">Admin Action</span>
+        </h2>
+        <div class="delete-modal-event-name" id="deleteEventName">Event Name</div>
+        <p class="delete-modal-message">
+            Are you sure you want to delete this event? This will permanently remove all event data, bookings, and seat information.
+        </p>
+        <div class="delete-modal-warning">
+            <span class="delete-modal-warning-icon">⚠️</span>
+            <div class="delete-modal-warning-text">
+                <strong>Warning:</strong> This action cannot be undone. All associated data will be permanently deleted from the system.
+            </div>
+        </div>
+        <div class="delete-modal-actions">
+            <button class="delete-modal-btn delete-modal-btn-cancel" onclick="closeDeleteModal()">
+                Cancel
+            </button>
+            <button class="delete-modal-btn delete-modal-btn-delete" onclick="confirmDeleteEvent()">
+                Yes, Delete Event
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="error-dialog-overlay" id="errorDialogOverlay"></div>
+<div id="errorDialog" class="error-dialog">
+    <div class="error-icon-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </div>
+    <h2 class="error-dialog-title">Error</h2>
+    <p class="error-dialog-message" id="errorDialogMessage">An error occurred.</p>
+    <button class="error-dialog-btn" onclick="closeErrorDialog()">OK</button>
+</div>
+
+<script>
+    let originalEventData = null;
+    let currentUser = null;
+    let currentEventId = null;
+    let selectedEventImage = null;
+    let organizersCache = {};
+    let isAdmin = false;
+    let allEvents = [];
+    let currentDisplayedEvents = [];
+    let currentSeatViewerData = null;
+    let pendingDeleteEventId = null;
+    let pendingDeleteEventName = null;
+
+    // Load events on page load
+    window.addEventListener('load', function() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const userData = sessionStorage.getItem('user');
+
+        if (!isLoggedIn || !userData) {
+            window.location.href = '/';
+            return;
+        }
+
+        currentUser = JSON.parse(userData);
+
+        // Get user role - ensure it's a number
+        const userRole = Number(currentUser.role);
+
+        console.log('User role:', userRole, 'Type:', typeof userRole);
+
+        // Allow BOTH admin (role 1) AND organizer (role 3)
+        if (userRole === 1 || userRole === 3) {
+            // Set admin flag
+            isAdmin = (userRole === 1);
+
+            // Setup appropriate view
+            if (isAdmin) {
+                setupAdminView();
+            } else {
+                setupOrganizerView();
+            }
+
+            // Load events
+            loadEvents();
+        } else {
+            alert('Access denied. Admin (role 1) or Organizer (role 3) privileges required.\nYour current role: ' + userRole);
+            window.location.href = '/';
+        }
+    });
+
+    function setupAdminView() {
+        document.getElementById('pageTitle').textContent = 'All Events (Admin)';
+        document.getElementById('headerTitle').textContent = 'All Events';
+        document.getElementById('headerSubtitle').textContent = 'View and manage all events on the platform';
+        document.getElementById('backBtn').href = '/admin-dashboard';
+        // Don't show create button for admin
+        document.getElementById('createEventBtn').style.display = 'none';
+    }
+
+    function setupOrganizerView() {
+        document.getElementById('pageTitle').textContent = 'Manage Events';
+        document.getElementById('headerTitle').textContent = 'My Events';
+        document.getElementById('headerSubtitle').textContent = 'Create and manage your events';
+        document.getElementById('backBtn').href = '/organizer-dashboard';
+        // Show create button for organizer
+        document.getElementById('createEventBtn').style.display = 'inline-block';
+    }
+
+    async function loadEvents() {
+        try {
+            document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('noDataMessage').style.display = 'none';
+            document.getElementById('eventsGrid').style.display = 'none';
+
+            let response;
+
+            if (isAdmin) {
+                // Admin: Load all events
+                response = await fetch('/api/events');
+            } else {
+                // Organizer: Load only their events
+                const userId = getUserId(currentUser);
+                response = await fetch(`/api/events/organizer/${userId}`);
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch events');
+            }
+
+            const events = await response.json();
+
+            // Store all events
+            allEvents = events;
+
+            // Fetch organizer data for all events
+            const uniqueOrganizerIds = [...new Set(events.map(e => e.organizerId))];
+            await Promise.all(uniqueOrganizerIds.map(id => fetchOrganizerData(id)));
+
+            // Apply initial sorting
+            applySorting();
+
+        } catch (error) {
+            console.error('Error loading events:', error);
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('errorText').textContent = error.message;
+        }
+    }
+
+    async function fetchOrganizerData(organizerId) {
+        if (organizersCache[organizerId]) return;
+
+        try {
+            const response = await fetch(`/api/users/${organizerId}`);
+            if (response.ok) {
+                const organizer = await response.json();
+                organizersCache[organizerId] = organizer;
+            }
+        } catch (error) {
+            console.error('Error fetching organizer data:', error);
+            organizersCache[organizerId] = {
+                name: 'Unknown Organizer',
+                avatarImage: null
+            };
+        }
+    }
+
+    function applySorting() {
+        const sortBy = document.getElementById('sortBy').value;
+        const sortOrder = document.getElementById('sortOrder').value;
+
+        // Get events to sort (either filtered from search or all events)
+        let eventsToSort = [...currentDisplayedEvents.length > 0 ? currentDisplayedEvents : allEvents];
+
+        // Sort the events
+        eventsToSort.sort((a, b) => {
+            let dateA, dateB;
+
+            if (sortBy === 'createdAt') {
+                dateA = new Date(a.createdAt || '1970-01-01');
+                dateB = new Date(b.createdAt || '1970-01-01');
+            } else if (sortBy === 'eventDate') {
+                dateA = new Date(a.eventDate || '9999-12-31');
+                dateB = new Date(b.eventDate || '9999-12-31');
+            }
+
+            // Apply sort order
+            if (sortOrder === 'asc') {
+                return dateA - dateB; // Oldest first
+            } else {
+                return dateB - dateA; // Newest first
+            }
+        });
+
+        // Update the display
+        displayEvents(eventsToSort);
+    }
+
+    function displayEvents(events) {
+        document.getElementById('loadingMessage').style.display = 'none';
+
+        // Store currently displayed events for sorting
+        currentDisplayedEvents = events;
+
+        // Update results count
+        document.getElementById('resultCount').textContent = events.length;
+
+        if (events.length === 0) {
+            document.getElementById('noDataMessage').style.display = 'block';
+
+            // Check if it's due to search
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm) {
+                document.getElementById('noDataText').textContent = `No events found matching "${searchTerm}"`;
+            } else if (isAdmin) {
+                document.getElementById('noDataText').textContent = 'No events found on the platform.';
+            } else {
+                document.getElementById('noDataText').textContent = 'No events found. Create your first event!';
+            }
+            return;
+        }
+
+        document.getElementById('noDataMessage').style.display = 'none';
+        document.getElementById('eventsGrid').style.display = 'grid';
+
+        const eventsGrid = document.getElementById('eventsGrid');
+        eventsGrid.innerHTML = '';
+
+        events.forEach(event => {
+            const card = createEventCard(event);
+            eventsGrid.appendChild(card);
+        });
+    }
+
+    function createEventCard(event) {
+        const card = document.createElement('div');
+        card.className = 'event-card';
+
+        const eventImage = event.eventImage
+            ? `<img src="${event.eventImage}" alt="${event.name}">`
+            : '🎉';
+
+        const organizer = organizersCache[event.organizerId] || { name: 'Unknown', avatarImage: null };
+        const organizerAvatarContent = organizer.avatarImage
+            ? `<img src="${organizer.avatarImage}" alt="${organizer.name}">`
+            : organizer.name.charAt(0).toUpperCase();
+
+        const vipInfo = event.vipSeats ? `
+    <div class="seat-info" onclick="openSeatViewer('${event.id}', 'VIP')">
+        <div class="seat-type">VIP</div>
+        <div class="seat-price">$${event.vipSeats.price.toFixed(2)}</div>
+        <div class="seat-available">${event.vipSeats.availableSeats}/${event.vipSeats.totalSeats}</div>
+    </div>
+` : '';
+
+        const standardInfo = event.standardSeats ? `
+    <div class="seat-info" onclick="openSeatViewer('${event.id}', 'Standard')">
+        <div class="seat-type">Standard</div>
+        <div class="seat-price">$${event.standardSeats.price.toFixed(2)}</div>
+        <div class="seat-available">${event.standardSeats.availableSeats}/${event.standardSeats.totalSeats}</div>
+    </div>
+` : '';
+
+        const concessionInfo = event.concessionSeats ? `
+    <div class="seat-info" onclick="openSeatViewer('${event.id}', 'Concession')">
+        <div class="seat-type">Concession</div>
+        <div class="seat-price">$${event.concessionSeats.price.toFixed(2)}</div>
+        <div class="seat-available">${event.concessionSeats.availableSeats}/${event.concessionSeats.totalSeats}</div>
+    </div>
+` : '';
+
+        const eventDateTime = formatDateTime(event.eventDate, event.eventTime);
+
+        card.innerHTML = `
+            <div class="event-image">${eventImage}</div>
+            <div class="event-content">
+                <div class="organizer-info">
+                    <div class="organizer-avatar">${organizerAvatarContent}</div>
+                    <div class="organizer-details">
+                        <div class="organizer-label">Organized by</div>
+                        <div class="organizer-name">${organizer.name}</div>
+                    </div>
+                </div>
+                <h3 class="event-name">${event.name}</h3>
+                <span class="event-category">${event.category || 'Uncategorized'}</span>
+                <div class="event-location">📍 ${event.location}</div>
+                <div class="event-datetime">🗓️ ${eventDateTime}</div>
+                <p class="event-description" title="${event.description || 'No description'}">${event.description || 'No description provided'}</p>
+                <div class="event-seats">
+                    ${vipInfo}
+                    ${standardInfo}
+                    ${concessionInfo}
+                </div>
+                <div class="event-actions">
+                    <button class="btn btn-edit" onclick="editEvent('${event.id}')">Edit</button>
+                    <button class="btn btn-delete" onclick="deleteEvent('${event.id}', '${event.name.replace(/'/g, "\\'")}')">Delete</button>
+                </div>
+            </div>
+        `;
+
+        return card;
+    }
+
+    function formatDateTime(date, time) {
+        if (!date) return 'Date TBA';
+
+        // Force Singapore timezone
+        const dateObj = new Date(date + 'T00:00:00+08:00');
+        const options = {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'Asia/Singapore'
+        };
+        const formattedDate = dateObj.toLocaleDateString('en-US', options);
+
+        if (time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${formattedDate} at ${displayHour}:${minutes} ${ampm}`;
+        }
+
+        return formattedDate;
+    }
+
+    function openCreateModal() {
+        if (isAdmin) {
+            alert('Admins cannot create events. Only organizers can create events.');
+            return;
+        }
+
+        document.getElementById('modalTitle').textContent = 'Create Event';
+        document.getElementById('eventForm').reset();
+        document.getElementById('imagePreview').classList.remove('show');
+        currentEventId = null;
+        originalEventData = null;
+        selectedEventImage = null;
+        document.getElementById('charCount').textContent = '0';
+        document.getElementById('eventModal').classList.add('active');
+    }
+
+    async function editEvent(eventId) {
+        try {
+            currentEventId = eventId;
+
+            const response = await fetch(`/api/events/${eventId}`);
+            if (!response.ok) throw new Error('Failed to load event');
+
+            const event = await response.json();
+
+            // Store original event data for calculating seat availability
+            originalEventData = JSON.parse(JSON.stringify(event));
+
+            document.getElementById('modalTitle').textContent = isAdmin ? 'Edit Event (Admin)' : 'Edit Event';
+            document.getElementById('eventName').value = event.name;
+            document.getElementById('eventLocation').value = event.location;
+            document.getElementById('eventCategory').value = event.category;
+            document.getElementById('eventDate').value = event.eventDate;
+            document.getElementById('eventTime').value = event.eventTime;
+            document.getElementById('eventDescription').value = event.description || '';
+            updateCharCount();
+
+            if (event.vipSeats) {
+                document.getElementById('vipSeats').value = event.vipSeats.totalSeats;
+                document.getElementById('vipPrice').value = event.vipSeats.price;
+            }
+
+            if (event.standardSeats) {
+                document.getElementById('standardSeats').value = event.standardSeats.totalSeats;
+                document.getElementById('standardPrice').value = event.standardSeats.price;
+            }
+
+            if (event.concessionSeats) {
+                document.getElementById('concessionSeats').value = event.concessionSeats.totalSeats;
+                document.getElementById('concessionPrice').value = event.concessionSeats.price;
+            }
+
+            if (event.eventImage) {
+                selectedEventImage = event.eventImage;
+                document.getElementById('imagePreview').src = event.eventImage;
+                document.getElementById('imagePreview').classList.add('show');
+            }
+
+            document.getElementById('eventModal').classList.add('active');
+
+        } catch (error) {
+            console.error('Error loading event:', error);
+            alert('Failed to load event details');
+        }
+    }
+
+    function closeEventModal() {
+        document.getElementById('eventModal').classList.remove('active');
+        document.getElementById('eventForm').reset();
+        document.getElementById('imagePreview').classList.remove('show');
+        currentEventId = null;
+        originalEventData = null;
+        selectedEventImage = null;
+    }
+
+    function previewEventImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size must be less than 5MB');
+            event.target.value = '';
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            selectedEventImage = e.target.result;
+            const preview = document.getElementById('imagePreview');
+            preview.src = selectedEventImage;
+            preview.classList.add('show');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    document.getElementById('eventForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (isAdmin && !currentEventId) {
+            showErrorDialog('Admins cannot create new events. Only organizers can create events.');
+            return;
+        }
+
+        const eventDate = document.getElementById('eventDate').value;
+        const eventTime = document.getElementById('eventTime').value;
+
+        if (eventDate && eventTime) {
+            const eventDateTime = new Date(`${eventDate}T${eventTime}`);
+            const now = new Date();
+
+            if (eventDateTime < now) {
+                showErrorDialog('Cannot create event in the past. Please select a future date and time.');
+                return;
+            }
+        }
+
+        // Validate that at least one seat type is filled
+        const vipSeatsInput = parseInt(document.getElementById('vipSeats').value) || 0;
+        const vipPriceInput = parseFloat(document.getElementById('vipPrice').value) || 0;
+        const standardSeatsInput = parseInt(document.getElementById('standardSeats').value) || 0;
+        const standardPriceInput = parseFloat(document.getElementById('standardPrice').value) || 0;
+        const concessionSeatsInput = parseInt(document.getElementById('concessionSeats').value) || 0;
+        const concessionPriceInput = parseFloat(document.getElementById('concessionPrice').value) || 0;
+
+        // Check if at least one seat type has both seats and price filled
+        const hasValidVIP = vipSeatsInput > 0 && vipPriceInput > 0;
+        const hasValidStandard = standardSeatsInput > 0 && standardPriceInput > 0;
+        const hasValidConcession = concessionSeatsInput > 0 && concessionPriceInput > 0;
+
+        if (!hasValidVIP && !hasValidStandard && !hasValidConcession) {
+            showErrorDialog('At least one seat type must be filled with both number of seats and price. You cannot create an event with no seats.');
+            return;
+        }
+
+        const userId = getUserId(currentUser);
+
+        const eventData = {
+            name: document.getElementById('eventName').value,
+            location: document.getElementById('eventLocation').value,
+            category: document.getElementById('eventCategory').value,
+            eventDate: document.getElementById('eventDate').value,
+            eventTime: document.getElementById('eventTime').value,
+            description: document.getElementById('eventDescription').value,
+            eventImage: selectedEventImage,
+            organizerId: userId
+        };
+
+        // Add seat information
+        const vipSeats = parseInt(document.getElementById('vipSeats').value) || 0;
+        const vipPrice = parseFloat(document.getElementById('vipPrice').value) || 0;
+        if (vipSeats > 0) {
+            let availableSeats = vipSeats; // Default for new events
+
+            if (currentEventId && originalEventData && originalEventData.vipSeats) {
+                // When editing: calculate the difference and adjust available seats
+                const seatDifference = vipSeats - originalEventData.vipSeats.totalSeats;
+                availableSeats = originalEventData.vipSeats.availableSeats + seatDifference;
+                // Ensure availableSeats doesn't go negative
+                availableSeats = Math.max(0, availableSeats);
+            }
+
+            eventData.vipSeats = {
+                totalSeats: vipSeats,
+                availableSeats: availableSeats,
+                price: vipPrice
+            };
+        }
+
+        const standardSeats = parseInt(document.getElementById('standardSeats').value) || 0;
+        const standardPrice = parseFloat(document.getElementById('standardPrice').value) || 0;
+        if (standardSeats > 0) {
+            let availableSeats = standardSeats; // Default for new events
+
+            if (currentEventId && originalEventData && originalEventData.standardSeats) {
+                // When editing: calculate the difference and adjust available seats
+                const seatDifference = standardSeats - originalEventData.standardSeats.totalSeats;
+                availableSeats = originalEventData.standardSeats.availableSeats + seatDifference;
+                // Ensure availableSeats doesn't go negative
+                availableSeats = Math.max(0, availableSeats);
+            }
+
+            eventData.standardSeats = {
+                totalSeats: standardSeats,
+                availableSeats: availableSeats,
+                price: standardPrice
+            };
+        }
+
+        const concessionSeats = parseInt(document.getElementById('concessionSeats').value) || 0;
+        const concessionPrice = parseFloat(document.getElementById('concessionPrice').value) || 0;
+        if (concessionSeats > 0) {
+            let availableSeats = concessionSeats; // Default for new events
+
+            if (currentEventId && originalEventData && originalEventData.concessionSeats) {
+                // When editing: calculate the difference and adjust available seats
+                const seatDifference = concessionSeats - originalEventData.concessionSeats.totalSeats;
+                availableSeats = originalEventData.concessionSeats.availableSeats + seatDifference;
+                // Ensure availableSeats doesn't go negative
+                availableSeats = Math.max(0, availableSeats);
+            }
+
+            eventData.concessionSeats = {
+                totalSeats: concessionSeats,
+                availableSeats: availableSeats,
+                price: concessionPrice
+            };
+        }
+
+        try {
+            const url = currentEventId
+                ? `/api/events/${currentEventId}`
+                : '/api/events';
+
+            const method = currentEventId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            });
+
+            if (response.ok) {
+                showSuccess(currentEventId ? 'Event updated successfully!' : 'Event created successfully!');
+                closeEventModal();
+                loadEvents();
+                originalEventData = null;
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            } else {
+                const errorText = await response.text();
+                showErrorDialog(errorText || 'Error saving event');
+            }
+        } catch (error) {
+            console.error('Error saving event:', error);
+            showErrorDialog('Error saving event: ' + error.message);
+        }
+    });
+
+    async function deleteEvent(eventId, eventName) {
+        // Store the event info
+        pendingDeleteEventId = eventId;
+        pendingDeleteEventName = eventName;
+
+        // Update modal content
+        document.getElementById('deleteEventName').textContent = eventName;
+
+        // Show admin badge if user is admin
+        if (isAdmin) {
+            document.getElementById('deleteAdminBadge').style.display = 'inline-block';
+        } else {
+            document.getElementById('deleteAdminBadge').style.display = 'none';
+        }
+
+        // Show the modal
+        document.getElementById('deleteModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close delete modal
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+
+        // Clear pending delete info
+        pendingDeleteEventId = null;
+        pendingDeleteEventName = null;
+    }
+
+    // Confirm and perform deletion
+    async function confirmDeleteEvent() {
+        if (!pendingDeleteEventId) {
+            closeDeleteModal();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/events/${pendingDeleteEventId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok || response.status === 204) {
+                showSuccess(isAdmin ? 'Event deleted successfully (Admin)!' : 'Event deleted successfully!');
+                closeDeleteModal();
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+                await loadEvents();
+            } else {
+                throw new Error('Failed to delete event');
+            }
+
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            alert('Failed to delete event: ' + error.message);
+            closeDeleteModal();
+        }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('deleteModal');
+        if (e.target === modal) {
+            closeDeleteModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('deleteModal');
+            if (modal && modal.classList.contains('active')) {
+                closeDeleteModal();
+            }
+        }
+    });
+
+    function getUserId(user) {
+        let userId = user.id;
+        if (!userId && user._id) {
+            if (typeof user._id === 'object' && user._id.$oid) {
+                userId = user._id.$oid;
+            } else if (typeof user._id === 'string') {
+                userId = user._id;
+            }
+        }
+        return userId;
+    }
+
+    function showSuccess(message) {
+        const banner = document.getElementById('successBanner');
+        const messageEl = document.getElementById('successMessage');
+
+        messageEl.textContent = message;
+        banner.classList.add('show');
+
+        setTimeout(() => {
+            hideSuccessBanner();
+        }, 5000);
+    }
+
+    function hideSuccessBanner() {
+        document.getElementById('successBanner').classList.remove('show');
+    }
+
+    function updateCharCount() {
+        const description = document.getElementById('eventDescription').value;
+        const charCount = document.getElementById('charCount');
+        charCount.textContent = description.length;
+
+        if (description.length > 450) {
+            charCount.style.color = '#ef4444';
+        } else if (description.length > 400) {
+            charCount.style.color = '#ff8c42';
+        } else {
+            charCount.style.color = '#666';
+        }
+    }
+
+    // Search functionality
+    function searchEvents() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const clearBtn = document.getElementById('clearSearchBtn');
+
+        // Show/hide clear button
+        if (searchTerm) {
+            clearBtn.classList.add('show');
+        } else {
+            clearBtn.classList.remove('show');
+        }
+
+        // If no search term, apply sorting to all events
+        if (!searchTerm) {
+            currentDisplayedEvents = allEvents;
+            applySorting();
+            return;
+        }
+
+        // Filter events based on search term
+        const filteredEvents = allEvents.filter(event => {
+            const searchableText = [
+                event.name || '',
+                event.location || '',
+                event.category || '',
+                event.description || '',
+                organizersCache[event.organizerId]?.name || ''
+            ].join(' ').toLowerCase();
+
+            return searchableText.includes(searchTerm);
+        });
+
+        currentDisplayedEvents = filteredEvents;
+        applySorting();
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('clearSearchBtn').classList.remove('show');
+        currentDisplayedEvents = allEvents;
+        applySorting();
+    }
+
+    // Function to open seat viewer modal
+    async function openSeatViewer(eventId, seatType) {
+        try {
+            document.getElementById('seatViewerModal').classList.add('active');
+            document.getElementById('seatViewerLoading').style.display = 'block';
+            document.getElementById('seatViewerGrid').style.display = 'none';
+
+            // Fetch event details
+            const eventResponse = await fetch(`/api/events/${eventId}`);
+            if (!eventResponse.ok) throw new Error('Failed to load event');
+
+            const event = await eventResponse.json();
+
+            // Fetch booked seats
+            const bookedResponse = await fetch(`/api/bookings/event/${eventId}/booked-seats`);
+            let bookedSeats = { VIP: [], Standard: [], Concession: [] };
+
+            if (bookedResponse.ok) {
+                bookedSeats = await bookedResponse.json();
+            }
+
+            // Get seat info based on type
+            let seatInfo = null;
+            if (seatType === 'VIP' && event.vipSeats) {
+                seatInfo = event.vipSeats;
+            } else if (seatType === 'Standard' && event.standardSeats) {
+                seatInfo = event.standardSeats;
+            } else if (seatType === 'Concession' && event.concessionSeats) {
+                seatInfo = event.concessionSeats;
+            }
+
+            if (!seatInfo) {
+                throw new Error('Seat type not found');
+            }
+
+            // Update modal title and info
+            document.getElementById('seatViewerTitle').textContent = `${seatType} Seats - ${event.name}`;
+            document.getElementById('viewerTotalSeats').textContent = seatInfo.totalSeats;
+            document.getElementById('viewerAvailableSeats').textContent = seatInfo.availableSeats;
+            document.getElementById('viewerBookedSeats').textContent = seatInfo.totalSeats - seatInfo.availableSeats;
+            document.getElementById('viewerPrice').textContent = `$${seatInfo.price.toFixed(2)}`;
+
+            // Store current data
+            currentSeatViewerData = {
+                seatType,
+                seatInfo,
+                bookedSeats: bookedSeats[seatType] || []
+            };
+
+            // Render seat grid
+            renderSeatViewerGrid();
+
+            document.getElementById('seatViewerLoading').style.display = 'none';
+            document.getElementById('seatViewerGrid').style.display = 'grid';
+
+        } catch (error) {
+            console.error('Error opening seat viewer:', error);
+            alert('Failed to load seat information: ' + error.message);
+            closeSeatViewer();
+        }
+    }
+
+    // Function to render seat grid
+    function renderSeatViewerGrid() {
+        const grid = document.getElementById('seatViewerGrid');
+        grid.innerHTML = '';
+
+        const { seatInfo, bookedSeats } = currentSeatViewerData;
+
+        for (let i = 1; i <= seatInfo.totalSeats; i++) {
+            const seat = document.createElement('div');
+            seat.className = 'viewer-seat';
+            seat.textContent = i;
+
+            const isBooked = bookedSeats.includes(i);
+
+            if (isBooked) {
+                seat.classList.add('booked');
+                seat.title = `Seat ${i} - Booked`;
+            } else {
+                seat.classList.add('available');
+                seat.title = `Seat ${i} - Available`;
+            }
+
+            grid.appendChild(seat);
+        }
+    }
+
+    // Function to close seat viewer modal
+    function closeSeatViewer() {
+        document.getElementById('seatViewerModal').classList.remove('active');
+        currentSeatViewerData = null;
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('seatViewerModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeSeatViewer();
+                }
+            });
+        }
+    });
+
+    // Close with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('seatViewerModal');
+            if (modal && modal.classList.contains('active')) {
+                closeSeatViewer();
+            }
+        }
+    });
+
+    function showErrorDialog(message) {
+        document.getElementById('errorDialogMessage').textContent = message;
+        document.getElementById('errorDialog').classList.add('active');
+        document.getElementById('errorDialogOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeErrorDialog() {
+        document.getElementById('errorDialog').classList.remove('active');
+        document.getElementById('errorDialogOverlay').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close error dialog when clicking overlay
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('errorDialogOverlay')?.addEventListener('click', function() {
+            closeErrorDialog();
+        });
+    });
+
+</script>
+</body>
+</html>

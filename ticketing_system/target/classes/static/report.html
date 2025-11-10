@@ -1,0 +1,648 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suspicious Activity Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #5568d3;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .stats-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .summary-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .summary-card.high {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .summary-card.medium {
+            background: #fffbeb;
+            border-color: #f59e0b;
+        }
+
+        .summary-card.low {
+            background: #f0fdf4;
+            border-color: #10b981;
+        }
+
+        .summary-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .fraud-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .fraud-category {
+            margin-bottom: 2rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e1e1e1;
+        }
+
+        .fraud-item {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .fraud-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .fraud-user-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .fraud-user-email {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .fraud-severity {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-high {
+            background: #fee;
+            color: #c00;
+        }
+
+        .severity-medium {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .severity-low {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .fraud-details {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .no-fraud {
+            text-align: center;
+            padding: 3rem;
+            color: #10b981;
+        }
+
+        .no-fraud-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-fraud-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-fraud-message {
+            color: #666;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header,
+            .stats-summary,
+            .fraud-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Suspicious Activity Report</div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar"></div>
+            <span id="userName"></span>
+            <a href="/admin-dashboard" class="back-btn">⬅ Back to Dashboard</a>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="page-header">
+        <h1 class="page-title">🚨 Suspicious Activity Report</h1>
+        <p class="page-subtitle">Monitor and analyze potentially fraudulent behavior across your platform</p>
+    </div>
+
+    <div id="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Analyzing platform activity...</p>
+    </div>
+
+    <div id="error" class="error-message" style="display: none;">
+        <strong>Error loading data.</strong> Please try again later.
+    </div>
+
+    <div id="summary" class="stats-summary" style="display: none;">
+        <div class="summary-grid">
+            <div class="summary-card high">
+                <div class="summary-label">Total Suspicious Activities</div>
+                <div class="summary-value" id="totalSuspicious">0</div>
+            </div>
+            <div class="summary-card high">
+                <div class="summary-label">High Severity</div>
+                <div class="summary-value" id="highSeverity">0</div>
+            </div>
+            <div class="summary-card medium">
+                <div class="summary-label">Medium Severity</div>
+                <div class="summary-value" id="mediumSeverity">0</div>
+            </div>
+            <div class="summary-card low">
+                <div class="summary-label">Low Severity</div>
+                <div class="summary-value" id="lowSeverity">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fraudContent" style="display: none;">
+        <!-- Fraud details will be inserted here -->
+    </div>
+</main>
+
+<script>
+    let currentUser = null;
+    let fraudData = null;
+
+    window.addEventListener('load', function() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const userData = sessionStorage.getItem('user');
+
+        if (!isLoggedIn || !userData) {
+            window.location.href = '/';
+            return;
+        }
+
+        currentUser = JSON.parse(userData);
+
+        if (currentUser.role !== 1) {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = '/';
+            return;
+        }
+
+        document.getElementById('userName').textContent = currentUser.name;
+
+        const avatarContainer = document.getElementById('userAvatar');
+        if (currentUser.avatarImage) {
+            avatarContainer.innerHTML = `<img src="${currentUser.avatarImage}" alt="Avatar">`;
+        } else {
+            avatarContainer.textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        loadFraudData();
+    });
+
+    async function loadFraudData() {
+        try {
+            const [eventsResponse, usersResponse, bookingsResponse] = await Promise.all([
+                fetch('/api/events'),
+                fetch('/api/users'),
+                fetch('/api/bookings')
+            ]);
+
+            if (!eventsResponse.ok || !usersResponse.ok || !bookingsResponse.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const events = await eventsResponse.json();
+            const users = await usersResponse.json();
+            const bookings = await bookingsResponse.json();
+
+            fraudData = detectFraudulentActivity(events, users, bookings);
+            displayFraudData();
+        } catch (error) {
+            console.error('Error loading fraud data:', error);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        }
+    }
+
+    function detectFraudulentActivity(events, users, bookings) {
+        const fraudData = {
+            excessiveCancellations: [],
+            inactiveUsers: [],
+            inactiveOrganizers: [],
+            suspiciousBookingPatterns: []
+        };
+
+        // 1. Detect users with excessive cancellations
+        users.forEach(user => {
+            const userId = user.id || (user._id && (user._id.$oid || user._id));
+            const userBookings = bookings.filter(b => b.userId === userId);
+            const cancelledBookings = userBookings.filter(b => b.status === 'cancelled');
+
+            if (cancelledBookings.length > 3) {
+                fraudData.excessiveCancellations.push({
+                    user: user,
+                    userId: userId,
+                    totalBookings: userBookings.length,
+                    cancelledCount: cancelledBookings.length,
+                    cancellationRate: ((cancelledBookings.length / userBookings.length) * 100).toFixed(1),
+                    severity: cancelledBookings.length > 5 ? 'high' : 'medium'
+                });
+            }
+        });
+
+        // 2. Detect inactive users (0 bookings)
+        users.filter(u => u.role === 2).forEach(user => {
+            const userId = user.id || (user._id && (user._id.$oid || user._id));
+            const userBookings = bookings.filter(b => b.userId === userId);
+
+            if (userBookings.length === 0) {
+                fraudData.inactiveUsers.push({
+                    user: user,
+                    userId: userId,
+                    severity: 'low'
+                });
+            }
+        });
+
+        // 3. Detect inactive organizers
+        users.filter(u => u.role === 3).forEach(user => {
+            const userId = user.id || (user._id && (user._id.$oid || user._id));
+            const organizerEvents = events.filter(e => e.organizerId === userId);
+
+            if (organizerEvents.length === 0) {
+                fraudData.inactiveOrganizers.push({
+                    user: user,
+                    userId: userId,
+                    eventsCreated: 0,
+                    severity: 'medium'
+                });
+            }
+        });
+
+        // 4. Detect suspicious booking patterns
+        users.forEach(user => {
+            const userId = user.id || (user._id && (user._id.$oid || user._id));
+            const userBookings = bookings.filter(b => b.userId === userId);
+
+            if (userBookings.length > 5) {
+                const cancelledBookings = userBookings.filter(b => b.status === 'cancelled');
+                const confirmedBookings = userBookings.filter(b => b.status === 'confirmed');
+
+                if (cancelledBookings.length >= 3 && confirmedBookings.length >= 3) {
+                    const bookingDates = userBookings.map(b => new Date(b.bookingDate));
+                    const oldestBooking = Math.min(...bookingDates);
+                    const newestBooking = Math.max(...bookingDates);
+                    const daysDifference = (newestBooking - oldestBooking) / (1000 * 60 * 60 * 24);
+
+                    if (daysDifference < 14) {
+                        fraudData.suspiciousBookingPatterns.push({
+                            user: user,
+                            userId: userId,
+                            totalBookings: userBookings.length,
+                            cancelledBookings: cancelledBookings.length,
+                            timeframe: `${Math.round(daysDifference)} days`,
+                            severity: 'high'
+                        });
+                    }
+                }
+            }
+        });
+
+        return fraudData;
+    }
+
+    function displayFraudData() {
+        document.getElementById('loading').style.display = 'none';
+
+        const totalSuspicious = fraudData.excessiveCancellations.length +
+            fraudData.inactiveUsers.length +
+            fraudData.inactiveOrganizers.length +
+            fraudData.suspiciousBookingPatterns.length;
+
+        if (totalSuspicious === 0) {
+            document.getElementById('fraudContent').innerHTML = `
+                <div class="fraud-section">
+                    <div class="no-fraud">
+                     <div class="no-fraud-icon">✅</div>
+                        <div class="no-fraud-title">No Suspicious Activity Detected</div>
+                        <div class="no-fraud-message">Your platform is operating normally with no red flags.</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('fraudContent').style.display = 'block';
+            return;
+        }
+
+        // Calculate severity counts
+        let highCount = 0, mediumCount = 0, lowCount = 0;
+        [...fraudData.excessiveCancellations, ...fraudData.inactiveUsers, ...fraudData.inactiveOrganizers, ...fraudData.suspiciousBookingPatterns].forEach(item => {
+            if (item.severity === 'high') highCount++;
+            else if (item.severity === 'medium') mediumCount++;
+            else lowCount++;
+        });
+
+        document.getElementById('totalSuspicious').textContent = totalSuspicious;
+        document.getElementById('highSeverity').textContent = highCount;
+        document.getElementById('mediumSeverity').textContent = mediumCount;
+        document.getElementById('lowSeverity').textContent = lowCount;
+        document.getElementById('summary').style.display = 'block';
+
+        let html = '<div class="fraud-section">';
+
+        if (fraudData.excessiveCancellations.length > 0) {
+            html += `
+                <div class="fraud-category">
+                      <h3 class="category-header">🚫 Excessive Cancellations (${fraudData.excessiveCancellations.length})</h3>
+            `;
+            fraudData.excessiveCancellations.forEach(item => {
+                html += `
+                    <div class="fraud-item">
+                        <div class="fraud-item-header">
+                            <div>
+                                <div class="fraud-user-name">${item.user.name}</div>
+                                <div class="fraud-user-email">${item.user.email}</div>
+                            </div>
+                            <span class="fraud-severity severity-${item.severity}">${item.severity}</span>
+                        </div>
+                        <div class="fraud-details">
+                            <strong>${item.cancelledCount}</strong> cancelled bookings out of <strong>${item.totalBookings}</strong> total
+                            (${item.cancellationRate}% cancellation rate)
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        if (fraudData.suspiciousBookingPatterns.length > 0) {
+            html += `
+                <div class="fraud-category">
+                    <h3 class="category-header">⚠️ Suspicious Booking Patterns (${fraudData.suspiciousBookingPatterns.length})</h3>
+            `;
+            fraudData.suspiciousBookingPatterns.forEach(item => {
+                html += `
+                    <div class="fraud-item">
+                        <div class="fraud-item-header">
+                            <div>
+                                <div class="fraud-user-name">${item.user.name}</div>
+                                <div class="fraud-user-email">${item.user.email}</div>
+                            </div>
+                            <span class="fraud-severity severity-${item.severity}">${item.severity}</span>
+                        </div>
+                        <div class="fraud-details">
+                            <strong>${item.totalBookings}</strong> bookings with <strong>${item.cancelledBookings}</strong> cancellations
+                            within <strong>${item.timeframe}</strong> - Possible booking/cancellation abuse
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        if (fraudData.inactiveOrganizers.length > 0) {
+            html += `
+                <div class="fraud-category">
+                    <h3 class="category-header">💤 Inactive Organizers (${fraudData.inactiveOrganizers.length})</h3>
+            `;
+            fraudData.inactiveOrganizers.forEach(item => {
+                html += `
+                    <div class="fraud-item">
+                        <div class="fraud-item-header">
+                            <div>
+                                <div class="fraud-user-name">${item.user.name}</div>
+                                <div class="fraud-user-email">${item.user.email}</div>
+                            </div>
+                            <span class="fraud-severity severity-${item.severity}">${item.severity}</span>
+                        </div>
+                        <div class="fraud-details">
+                            Approved organizer with <strong>0 events</strong> created
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        if (fraudData.inactiveUsers.length > 0) {
+            html += `
+                <div class="fraud-category">
+                          <h3 class="category-header">👤 Inactive Users (${fraudData.inactiveUsers.length})</h3>
+            `;
+            fraudData.inactiveUsers.forEach(item => {
+                html += `
+                    <div class="fraud-item">
+                        <div class="fraud-item-header">
+                            <div>
+                                <div class="fraud-user-name">${item.user.name}</div>
+                                <div class="fraud-user-email">${item.user.email}</div>
+                            </div>
+                            <span class="fraud-severity severity-${item.severity}">${item.severity}</span>
+                        </div>
+                        <div class="fraud-details">
+                            Registered user with <strong>0 bookings</strong>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        html += '</div>';
+        document.getElementById('fraudContent').innerHTML = html;
+        document.getElementById('fraudContent').style.display = 'block';
+    }
+</script>
+</body>
+</html>

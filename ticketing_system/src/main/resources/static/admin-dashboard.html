@@ -1,0 +1,1547 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .live-time {
+            color: #0066cc;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-number.loading {
+            color: #999;
+            font-size: 1.2rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .positive { color: #10b981; }
+        .negative { color: #ef4444; }
+        .neutral { color: #666; }
+
+        .quick-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Changed to 3 columns */
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .actions-grid {
+                grid-template-columns: 1fr; /* 1 column on mobile */
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+            }
+        }
+
+        /* Advertisement Modal Styles */
+        .ad-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ad-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ad-modal-container {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .ad-modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e1e1e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ad-modal-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .ad-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #999;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .ad-modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .ad-modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .ad-upload-zone {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: #f8f9fc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .ad-upload-zone:hover,
+        .ad-upload-zone.dragover {
+            background: #eef2ff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .ad-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .ad-upload-title {
+            color: #667eea;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-upload-subtitle {
+            color: #999;
+            font-size: 0.875rem;
+        }
+
+        .ad-file-input {
+            display: none;
+        }
+
+        .ad-preview-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .ad-preview-card {
+            position: relative;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .ad-preview-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .ad-preview-img {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background: #f0f0f0;
+        }
+
+        .ad-preview-info {
+            padding: 0.75rem;
+            background: #f8f9fc;
+        }
+
+        .ad-preview-name {
+            font-size: 0.875rem;
+            color: #333;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ad-preview-size {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .ad-delete-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .ad-delete-btn:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .ad-modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e1e1e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ad-count {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .ad-modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ad-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .ad-btn-cancel {
+            background: white;
+            border: 1px solid #e1e1e1;
+            color: #666;
+        }
+
+        .ad-btn-cancel:hover {
+            background: #f8f9fc;
+        }
+
+        .ad-btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .ad-btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .ad-btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ad-btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .ad-btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .ad-empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* Logo Preview Styles */
+        .logo-preview-card {
+            position: relative;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .logo-preview-card:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .logo-preview-img {
+            max-width: 200px;
+            max-height: 80px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: #f8f9fc;
+            padding: 0.5rem;
+        }
+
+        .logo-preview-info {
+            flex: 1;
+        }
+
+        .logo-preview-name {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-preview-size {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .logo-delete-btn {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .logo-delete-btn:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        /* Notification Modal */
+        .notification-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .notification-modal.active {
+            display: flex;
+        }
+
+        .notification-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        .notification-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .notification-icon.success {
+            color: #10b981;
+        }
+
+        .notification-icon.error {
+            color: #ef4444;
+        }
+
+        .notification-icon.warning {
+            color: #ff8c42;
+        }
+
+        .notification-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-message {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .notification-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .notification-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .notification-btn-secondary {
+            background: white;
+            border: 1px solid #e1e1e1;
+            color: #666;
+        }
+
+        .notification-btn-secondary:hover {
+            background: #f8f9fc;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .welcome-section,
+            .quick-actions {
+                padding: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Logout Confirmation Modal */
+        .logout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .logout-modal.active {
+            display: flex;
+        }
+
+        .logout-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .logout-modal-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .logout-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .logout-modal-message {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .logout-modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .logout-modal-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-modal-btn-cancel {
+            background: #f1f3f5;
+            color: #495057;
+        }
+
+        .logout-modal-btn-cancel:hover {
+            background: #e9ecef;
+        }
+
+        .logout-modal-btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .logout-modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Admin Dashboard</div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar"></div>
+            <span id="userName"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <section class="welcome-section">
+        <h1 class="welcome-title" id="welcomeTitle">Welcome back!</h1>
+        <p class="welcome-subtitle">Here's what's happening with your platform today.</p>
+        <div class="live-time" id="liveTime">Loading time...</div>
+    </section>
+
+    <div id="statsError" class="error-message" style="display: none;">
+        <strong>Error loading statistics.</strong> Please refresh the page to try again.
+    </div>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Total Events</span>
+                <div class="stat-icon" style="background: #e0f2fe;">🎉</div>
+            </div>
+            <div class="stat-number loading" id="totalEvents">Loading...</div>
+            <div class="stat-change neutral" id="eventsChange">Fetching data...</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Active Organizers</span>
+                <div class="stat-icon" style="background: #fff3e0;">👥</div>
+            </div>
+            <div class="stat-number loading" id="activeOrganizers">Loading...</div>
+            <div class="stat-change neutral" id="organizersChange">Fetching data...</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Total Users</span>
+                <div class="stat-icon" style="background: #f3e5f5;">📊</div>
+            </div>
+            <div class="stat-number loading" id="totalUsers">Loading...</div>
+            <div class="stat-change neutral" id="usersChange">Fetching data...</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Pending Requests</span>
+                <div class="stat-icon" style="background: #ffe0e0;">⏳</div>
+            </div>
+            <div class="stat-number loading" id="pendingRequests">Loading...</div>
+            <div class="stat-change neutral" id="pendingChange">Awaiting approval</div>
+        </div>
+    </section>
+
+    <section class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="actions-grid">
+            <button class="action-btn" onclick="viewAllEvents()">
+                <span class="action-icon">🎉</span>
+                Edit Events
+            </button>
+
+            <button class="action-btn" onclick="CustomerView()">
+                <span class="action-icon">👨🏻‍💻</span>
+                Customer view
+            </button>
+            <button class="action-btn" onclick="ApproveOrg()">
+                <span class="action-icon">✅</span>
+                Approve Organizers
+            </button>
+
+            <button class="action-btn" onclick="viewProfile()">
+                <span class="action-icon">👤</span>
+                My Profile
+            </button>
+            <button class="action-btn" onclick="viewReports()">
+                <span class="action-icon">🥸</span>
+                Suspicious Activity Report
+            </button>
+            <button class="action-btn" onclick="manageAdvertisements()">
+                <span class="action-icon">🎨</span>
+                Manage Logo & Ads
+            </button>
+        </div>
+    </section>
+</main>
+
+<!-- Advertisement Modal -->
+<div id="adModal" class="ad-modal">
+    <div class="ad-modal-container">
+        <div class="ad-modal-header">
+            <h2 class="ad-modal-title">🎨 Manage Logo & Advertisements</h2>
+            <button class="ad-modal-close" onclick="closeAdModal()">X</button>
+        </div>
+
+        <div class="ad-modal-body">
+            <!-- Logo Section -->
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: #333; font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>🎨</span> Website Logo
+                </h3>
+                <div class="ad-upload-zone" id="logoUploadZone">
+                    <div class="ad-upload-icon">🖼️</div>
+                    <div class="ad-upload-title">Upload Website Logo</div>
+                    <div class="ad-upload-subtitle">Click to browse or drag & drop logo image</div>
+                    <div class="ad-upload-subtitle" style="margin-top: 0.5rem; font-size: 0.75rem;">
+                        Supported: PNG, SVG, JPG • Max 2MB • Recommended: 200x60px
+                    </div>
+                </div>
+                <input type="file" id="logoFileInput" class="ad-file-input" accept="image/*">
+
+                <div id="logoPreviewSection" style="margin-top: 1rem;">
+                    <div id="logoPreview"></div>
+                </div>
+            </div>
+
+            <!-- Advertisements Section -->
+            <div>
+                <h3 style="color: #333; font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📢</span> Banner Advertisements
+                </h3>
+                <div class="ad-upload-zone" id="uploadZone">
+                    <div class="ad-upload-icon">📁</div>
+                    <div class="ad-upload-title">Upload Advertisements</div>
+                    <div class="ad-upload-subtitle">Click to browse or drag & drop images/GIFs</div>
+                    <div class="ad-upload-subtitle" style="margin-top: 0.5rem; font-size: 0.75rem;">
+                        Supported: JPG, PNG, GIF • Max 5MB per file
+                    </div>
+                </div>
+                <input type="file" id="adFileInput" class="ad-file-input" accept="image/*" multiple>
+
+                <div id="previewSection">
+                    <div id="adPreviewList" class="ad-preview-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ad-modal-footer">
+            <div class="ad-count">
+                <span id="adCountText">No advertisements uploaded</span>
+            </div>
+            <div class="ad-modal-actions">
+                <button class="ad-btn ad-btn-cancel" onclick="closeAdModal()">Cancel</button>
+                <button class="ad-btn ad-btn-danger" onclick="clearAllAds()" title="Remove all advertisements">🗑️ Clear All Ads</button>
+                <button class="ad-btn ad-btn-save" id="saveAdsBtn" onclick="saveAds()">💾 Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Modal -->
+<div id="notificationModal" class="notification-modal">
+    <div class="notification-content">
+        <div class="notification-icon" id="notificationIcon">✓</div>
+        <h3 class="notification-title" id="notificationTitle">Success</h3>
+        <p class="notification-message" id="notificationMessage">Operation completed successfully</p>
+        <div class="notification-actions">
+            <button class="notification-btn notification-btn-primary" onclick="closeNotification()">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="logout-modal">
+    <div class="logout-modal-content">
+        <div class="logout-modal-icon">👋</div>
+        <h2 class="logout-modal-title">Logout Confirmation</h2>
+        <p class="logout-modal-message">
+            Are you sure you want to logout?
+        </p>
+        <div class="logout-modal-actions">
+            <button class="logout-modal-btn logout-modal-btn-cancel" onclick="closeLogoutModal()">
+                Cancel
+            </button>
+            <button class="logout-modal-btn logout-modal-btn-confirm" onclick="confirmLogout()">
+                Yes, Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let adFiles = [];
+    let logoFile = null;
+
+    // Load user data and initialize dashboard
+    window.addEventListener('load', function() {
+        // Check if user is logged in
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const userData = sessionStorage.getItem('user');
+
+        if (!isLoggedIn || !userData) {
+            // Redirect to login if not logged in
+            window.location.href = '/';
+            return;
+        }
+
+        // Parse user data
+        currentUser = JSON.parse(userData);
+
+        // Check if user is admin (role 1)
+        if (currentUser.role !== 1) {
+            alert('Access denied. Only administrators can access this page.');
+            window.location.href = '/';
+            return;
+        }
+
+        // Display user info
+        const avatarContainer = document.getElementById('userAvatar');
+        if (currentUser.avatarImage) {
+            avatarContainer.innerHTML = `<img src="${currentUser.avatarImage}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        } else {
+            avatarContainer.textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('welcomeTitle').textContent = `Welcome back, ${currentUser.name}!`;
+
+        // Load statistics
+        loadStatistics();
+
+        // Start live time updates
+        updateLiveTime();
+        setInterval(updateLiveTime, 1000); // Update every second
+    });
+
+    // Function to update live time in Singapore timezone
+    function updateLiveTime() {
+        const now = new Date();
+        const options = {
+            timeZone: 'Asia/Singapore',
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+        const singaporeTime = now.toLocaleString('en-US', options);
+        document.getElementById('liveTime').textContent = `Singapore Time: ${singaporeTime}`;
+    }
+
+    async function loadStatistics() {
+        try {
+            // Fetch all data in parallel
+            const [eventsResponse, usersResponse] = await Promise.all([
+                fetch('/api/events'),
+                fetch('/api/users')
+            ]);
+
+            // Check if all requests were successful
+            if (!eventsResponse.ok || !usersResponse.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            // Parse all responses
+            const events = await eventsResponse.json();
+            const users = await usersResponse.json();
+
+            // Update Total Events
+            document.getElementById('totalEvents').textContent = events.length;
+            document.getElementById('totalEvents').classList.remove('loading');
+            document.getElementById('eventsChange').textContent = 'All events across platform';
+
+            // Calculate user statistics
+            const totalUsers = users.length;
+            const organizers = users.filter(u => u.role === 3); // Role 3 = Approved Organizer
+            const pending = users.filter(u => u.role === 4); // Role 4 = Pending Organizer
+
+            // Update Total Users
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('totalUsers').classList.remove('loading');
+            document.getElementById('usersChange').textContent = 'Registered users';
+
+            // Update Active Organizers
+            document.getElementById('activeOrganizers').textContent = organizers.length;
+            document.getElementById('activeOrganizers').classList.remove('loading');
+            document.getElementById('organizersChange').textContent = 'Approved organizers';
+
+            // Update Pending Requests
+            document.getElementById('pendingRequests').textContent = pending.length;
+            document.getElementById('pendingRequests').classList.remove('loading');
+
+            if (pending.length > 0) {
+                document.getElementById('pendingChange').textContent = `${pending.length} pending approval`;
+                document.getElementById('pendingChange').className = 'stat-change negative';
+            } else {
+                document.getElementById('pendingChange').textContent = 'No pending requests';
+                document.getElementById('pendingChange').className = 'stat-change positive';
+            }
+
+        } catch (error) {
+            console.error('Error loading statistics:', error);
+            document.getElementById('statsError').style.display = 'block';
+
+            // Show error state in all stat cards
+            const statNumbers = document.querySelectorAll('.stat-number.loading');
+            statNumbers.forEach(el => {
+                el.textContent = 'Error';
+                el.classList.remove('loading');
+            });
+
+            const statChanges = document.querySelectorAll('.stat-change');
+            statChanges.forEach(el => {
+                if (el.textContent === 'Fetching data...') {
+                    el.textContent = 'Failed to load';
+                    el.className = 'stat-change negative';
+                }
+            });
+        }
+    }
+
+    function ApproveOrg() {
+        window.location.href = '/ApproveOrg';
+    }
+
+    function viewAllEvents() {
+        window.location.href = '/ViewEvent';
+    }
+
+    function CustomerView(){
+        window.location.href = '/AllEvents';
+    }
+
+    function viewProfile() {
+        window.location.href = '/userProfile';
+    }
+
+    function viewReports() {
+        window.location.href = '/report';
+    }
+
+    // Show logout confirmation modal
+    function logout() {
+        document.getElementById('logoutModal').classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    // Close logout modal
+    function closeLogoutModal() {
+        document.getElementById('logoutModal').classList.remove('active');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Confirm and perform logout
+    function confirmLogout() {
+        sessionStorage.clear();
+        window.location.href = '/';
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('logoutModal');
+        if (e.target === modal) {
+            closeLogoutModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('logoutModal');
+            if (modal.classList.contains('active')) {
+                closeLogoutModal();
+            }
+        }
+    });
+
+    // Advertisement Management Functions
+    function manageAdvertisements() {
+        // Load existing logo and ads from API
+        loadLogoFromAPI();
+        loadAdvertisementsFromAPI();
+
+        // Show modal
+        document.getElementById('adModal').classList.add('active');
+
+        // Setup event listeners
+        setupLogoUpload();
+        setupAdUpload();
+    }
+
+    async function loadAdvertisementsFromAPI() {
+        try {
+            const response = await fetch('/api/advertisements');
+            if (response.ok) {
+                const ads = await response.json();
+                // Convert API format to local format
+                adFiles = ads.map(ad => ({
+                    id: ad.id,
+                    name: ad.name,
+                    size: ad.size,
+                    data: ad.imageData,
+                    type: ad.type
+                }));
+                displayAdPreviews();
+            }
+        } catch (error) {
+            console.error('Error loading advertisements:', error);
+        }
+    }
+
+    function setupAdUpload() {
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('adFileInput');
+
+        // Click to upload
+        uploadZone.onclick = () => fileInput.click();
+
+        // File input change
+        fileInput.onchange = handleAdFiles;
+
+        // Drag and drop
+        uploadZone.ondragover = (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        };
+
+        uploadZone.ondragleave = () => {
+            uploadZone.classList.remove('dragover');
+        };
+
+        uploadZone.ondrop = (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleAdFiles({ target: { files: e.dataTransfer.files } });
+        };
+    }
+
+    function handleAdFiles(e) {
+        const files = Array.from(e.target.files);
+
+        files.forEach(file => {
+            // Validate
+            if (!file.type.match('image.*')) {
+                showNotification('error', 'Invalid File Type', `${file.name} is not an image file. Please upload JPG, PNG, or GIF files only.`);
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('error', 'File Too Large', `${file.name} exceeds the 5MB size limit. Please choose a smaller file.`);
+                return;
+            }
+
+            // Read file
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                adFiles.push({
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: formatFileSize(file.size),
+                    data: event.target.result,
+                    type: file.type
+                });
+                displayAdPreviews();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Reset input
+        e.target.value = '';
+    }
+
+    function displayAdPreviews() {
+        const previewList = document.getElementById('adPreviewList');
+        const countText = document.getElementById('adCountText');
+
+        if (adFiles.length === 0) {
+            previewList.innerHTML = '<div class="ad-empty-state">No advertisements uploaded yet</div>';
+            countText.textContent = 'No advertisements uploaded';
+            return;
+        }
+
+        countText.textContent = `${adFiles.length} advertisement${adFiles.length > 1 ? 's' : ''} uploaded`;
+
+        previewList.innerHTML = adFiles.map(ad => `
+            <div class="ad-preview-card">
+              <button class="ad-delete-btn" onclick="deleteAd('${ad.id}')">X</button>
+                <img src="${ad.data}" alt="${ad.name}" class="ad-preview-img">
+                <div class="ad-preview-info">
+                    <div class="ad-preview-name" title="${ad.name}">${ad.name}</div>
+                    <div class="ad-preview-size">${ad.size}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function deleteAd(id) {
+        adFiles = adFiles.filter(ad => ad.id != id);
+        displayAdPreviews();
+    }
+
+    function clearAllAds() {
+        if (adFiles.length === 0) {
+            showNotification('warning', 'No Advertisements', 'There are no advertisements to clear.');
+            return;
+        }
+
+        adFiles = [];
+        displayAdPreviews();
+        showNotification('success', 'Cleared', 'All advertisements have been removed from the preview. Click "Save Advertisements" to apply changes.');
+    }
+
+    async function saveAds() {
+        try {
+            // Save logo
+            if (logoFile) {
+                const logoData = {
+                    name: logoFile.name,
+                    imageData: logoFile.data,
+                    type: logoFile.type,
+                    size: logoFile.size
+                };
+
+                const logoResponse = await fetch('/api/logo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(logoData)
+                });
+
+                if (!logoResponse.ok) {
+                    throw new Error('Failed to save logo');
+                }
+            } else {
+                // Delete logo if removed
+                await fetch('/api/logo', {
+                    method: 'DELETE'
+                });
+            }
+
+            // Delete all existing advertisements
+            await fetch('/api/advertisements', {
+                method: 'DELETE'
+            });
+
+            if (adFiles.length === 0 && !logoFile) {
+                showNotification('success', 'Changes Saved!', 'All advertisements and logo have been removed.', true);
+                return;
+            }
+
+            if (adFiles.length === 0) {
+                showNotification('success', 'Changes Saved!', 'Logo updated successfully. All advertisements have been removed.', true);
+                return;
+            }
+
+            // Convert adFiles to API format and save
+            const adsToSave = adFiles.map((ad, index) => ({
+                name: ad.name,
+                imageData: ad.data,
+                type: ad.type,
+                size: ad.size,
+                displayOrder: index,
+                active: true
+            }));
+
+            const response = await fetch('/api/advertisements/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(adsToSave)
+            });
+
+            if (response.ok) {
+                let message = '';
+                if (logoFile) {
+                    message = `Successfully saved logo and ${adFiles.length} advertisement${adFiles.length > 1 ? 's' : ''}. They will now appear on the website.`;
+                } else {
+                    message = `Successfully saved ${adFiles.length} advertisement${adFiles.length > 1 ? 's' : ''}. They will now appear on the All Events page.`;
+                }
+                showNotification('success', 'Changes Saved!', message, true);
+            } else {
+                throw new Error('Failed to save advertisements');
+            }
+        } catch (error) {
+            console.error('Error saving:', error);
+            showNotification('error', 'Save Failed', 'Failed to save changes. Please try again.');
+        }
+    }
+
+    // Logo Management Functions
+    async function loadLogoFromAPI() {
+        try {
+            const response = await fetch('/api/logo');
+            if (response.ok) {
+                const logo = await response.json();
+                if (logo && logo.imageData) {
+                    logoFile = {
+                        id: logo.id,
+                        name: logo.name,
+                        size: logo.size,
+                        data: logo.imageData,
+                        type: logo.type
+                    };
+                    displayLogoPreview();
+                }
+            }
+        } catch (error) {
+            console.error('Error loading logo:', error);
+        }
+    }
+
+    function setupLogoUpload() {
+        const logoUploadZone = document.getElementById('logoUploadZone');
+        const logoFileInput = document.getElementById('logoFileInput');
+
+        // Click to upload
+        logoUploadZone.onclick = () => logoFileInput.click();
+
+        // File input change
+        logoFileInput.onchange = handleLogoFile;
+
+        // Drag and drop
+        logoUploadZone.ondragover = (e) => {
+            e.preventDefault();
+            logoUploadZone.classList.add('dragover');
+        };
+
+        logoUploadZone.ondragleave = () => {
+            logoUploadZone.classList.remove('dragover');
+        };
+
+        logoUploadZone.ondrop = (e) => {
+            e.preventDefault();
+            logoUploadZone.classList.remove('dragover');
+            handleLogoFile({ target: { files: e.dataTransfer.files } });
+        };
+    }
+
+    function handleLogoFile(e) {
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        // Validate
+        if (!file.type.match('image.*')) {
+            showNotification('error', 'Invalid File Type', 'Please upload a valid image file (PNG, SVG, JPG).');
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            showNotification('error', 'File Too Large', `${file.name} exceeds the 2MB size limit. Please choose a smaller file.`);
+            return;
+        }
+
+        // Read file
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            logoFile = {
+                id: Date.now(),
+                name: file.name,
+                size: formatFileSize(file.size),
+                data: event.target.result,
+                type: file.type
+            };
+            displayLogoPreview();
+        };
+        reader.readAsDataURL(file);
+
+        // Reset input
+        e.target.value = '';
+    }
+
+    function displayLogoPreview() {
+        const logoPreview = document.getElementById('logoPreview');
+
+        if (!logoFile) {
+            logoPreview.innerHTML = '';
+            return;
+        }
+
+        logoPreview.innerHTML = `
+            <div class="logo-preview-card">
+                <img src="${logoFile.data}" alt="Website Logo" class="logo-preview-img">
+                <div class="logo-preview-info">
+                    <div class="logo-preview-name">${logoFile.name}</div>
+                    <div class="logo-preview-size">${logoFile.size}</div>
+                </div>
+                <button class="logo-delete-btn" onclick="deleteLogo()">X</button>
+            </div>
+        `;
+    }
+
+    function deleteLogo() {
+        logoFile = null;
+        displayLogoPreview();
+        showNotification('success', 'Logo Removed', 'The logo has been removed. Click "Save" to apply changes.');
+    }
+
+    function closeAdModal() {
+        document.getElementById('adModal').classList.remove('active');
+        adFiles = [];
+        logoFile = null;
+        document.getElementById('adPreviewList').innerHTML = '';
+        document.getElementById('logoPreview').innerHTML = '';
+        document.getElementById('adCountText').textContent = 'No advertisements uploaded';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Notification Functions
+    function showNotification(type, title, message, closeModalAfter = false) {
+        const modal = document.getElementById('notificationModal');
+        const icon = document.getElementById('notificationIcon');
+        const titleEl = document.getElementById('notificationTitle');
+        const messageEl = document.getElementById('notificationMessage');
+
+        // Set icon based on type
+        if (type === 'success') {
+            icon.textContent = '✓';
+            icon.className = 'notification-icon success';
+        } else if (type === 'error') {
+            icon.textContent = '✕';
+            icon.className = 'notification-icon error';
+        } else if (type === 'warning') {
+            icon.textContent = '⚠';
+            icon.className = 'notification-icon warning';
+        }
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        modal.classList.add('active');
+
+        // Store whether to close ad modal after notification
+        modal.dataset.closeAdModal = closeModalAfter;
+    }
+
+    function closeNotification() {
+        const modal = document.getElementById('notificationModal');
+        const shouldCloseAdModal = modal.dataset.closeAdModal === 'true';
+
+        modal.classList.remove('active');
+
+        if (shouldCloseAdModal) {
+            closeAdModal();
+        }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('adModal');
+        if (e.target === modal) {
+            closeAdModal();
+        }
+
+        const notificationModal = document.getElementById('notificationModal');
+        if (e.target === notificationModal) {
+            closeNotification();
+        }
+    });
+</script>
+
+</body>
+</html>

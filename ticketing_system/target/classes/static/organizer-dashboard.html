@@ -1,0 +1,929 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.scan-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .action-btn.scan-btn:hover {
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* QR Scanner Modal */
+        .scanner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scanner-modal.active {
+            display: flex;
+        }
+
+        .scanner-container {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .scanner-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .scanner-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-scanner {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .close-scanner:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .scanner-body {
+            padding: 2rem;
+        }
+
+        .scanner-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e1e1e1;
+        }
+
+        .scanner-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .scanner-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #qr-reader {
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .manual-input-section {
+            text-align: center;
+        }
+
+        .manual-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .manual-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .result-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-message {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .booking-details {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .detail-value {
+            color: #333;
+        }
+
+        .scan-another-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .scan-another-btn:hover {
+            background: #5568d3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .welcome-section,
+            .quick-actions {
+                padding: 1.5rem;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .scanner-container {
+                width: 95%;
+            }
+
+            .scanner-tabs {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .scanner-tab {
+                border-bottom: 1px solid #e1e1e1;
+            }
+        }
+
+        /* Logout Confirmation Modal */
+        .logout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .logout-modal.active {
+            display: flex;
+        }
+
+        .logout-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .logout-modal-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .logout-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .logout-modal-message {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .logout-modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .logout-modal-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-modal-btn-cancel {
+            background: #f1f3f5;
+            color: #495057;
+        }
+
+        .logout-modal-btn-cancel:hover {
+            background: #e9ecef;
+        }
+
+        .logout-modal-btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .logout-modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- QR Code Scanner Library -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Organizer Dashboard</div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar"></div>
+            <span id="userName"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <section class="welcome-section">
+        <h1 class="welcome-title" id="welcomeTitle">Welcome back!</h1>
+        <p class="welcome-subtitle">Manage your events below</p>
+    </section>
+
+    <section class="quick-actions">
+        <h2 class="section-title">Manage Events</h2>
+        <div class="actions-grid">
+            <button class="action-btn" onclick="ViewEvent()">
+                <span class="action-icon">🎉</span>
+                View Events
+            </button>
+            <button class="action-btn scan-btn" onclick="openScanner()">
+                <span class="action-icon"> 📷</span>
+                Scan QR Code
+            </button>
+            <button class="action-btn" onclick="viewSales()">
+                <span class="action-icon">📈</span>
+                Track Total Sales
+            </button>
+            <button class="action-btn" onclick="viewProfile()">
+                <span class="action-icon">👤</span>
+                 My Profile
+            </button>
+        </div>
+    </section>
+</main>
+
+<!-- QR Scanner Modal -->
+<div id="scannerModal" class="scanner-modal">
+    <div class="scanner-container">
+        <div class="scanner-header">
+            <h2 class="scanner-title">Ticket Verification</h2>
+            <button class="close-scanner" onclick="closeScanner()">X</button>
+        </div>
+
+        <div class="scanner-body">
+            <div class="scanner-tabs">
+                <button class="scanner-tab active" onclick="switchScannerTab('camera')">
+                    📷 Scan Tickets
+                </button>
+                <button class="scanner-tab" onclick="switchScannerTab('manual')">
+                    ⌨️ Manual Entry
+                </button>
+            </div>
+
+            <div id="cameraTab" class="tab-content active">
+                <div id="qr-reader"></div>
+                <p style="text-align: center; color: #666; font-size: 0.9rem;">
+                    Position the QR code within the camera frame
+                </p>
+            </div>
+
+            <div id="manualTab" class="tab-content">
+                <div class="manual-input-section">
+                    <h3 style="margin-bottom: 1rem; color: #333;">Enter Booking ID</h3>
+                    <input
+                            type="text"
+                            id="manualBookingId"
+                            class="manual-input"
+                            placeholder="Enter Booking ID"
+                            maxlength="24"
+                    >
+                    <button class="verify-btn" onclick="verifyManualBooking()">
+                        Verify Booking
+                    </button>
+                </div>
+            </div>
+
+            <div id="resultSection" class="result-section">
+                <div class="result-icon" id="resultIcon">✅</div>
+                <div class="result-title" id="resultTitle">Success!</div>
+                <div class="result-message" id="resultMessage">Ticket verified successfully</div>
+                <div id="bookingDetails" class="booking-details"></div>
+                <button class="scan-another-btn" onclick="scanAnother()">Scan Another Ticket</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="logout-modal">
+    <div class="logout-modal-content">
+        <div class="logout-modal-icon">👋</div>
+        <h2 class="logout-modal-title">Logout Confirmation</h2>
+        <p class="logout-modal-message">
+            Are you sure you want to logout?
+        </p>
+        <div class="logout-modal-actions">
+            <button class="logout-modal-btn logout-modal-btn-cancel" onclick="closeLogoutModal()">
+                Cancel
+            </button>
+            <button class="logout-modal-btn logout-modal-btn-confirm" onclick="confirmLogout()">
+                Yes, Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let currentUser = null;
+    let html5QrCode = null;
+
+    // Load user data and initialize dashboard
+    window.addEventListener('load', function() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const userData = sessionStorage.getItem('user');
+
+        if (!isLoggedIn || !userData) {
+            window.location.href = '/';
+            return;
+        }
+
+        currentUser = JSON.parse(userData);
+
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('welcomeTitle').textContent = `Welcome back, ${currentUser.name.split(' ')[0]}!`;
+
+        const avatarContainer = document.getElementById('userAvatar');
+        if (currentUser.avatarImage) {
+            avatarContainer.innerHTML = `<img src="${currentUser.avatarImage}" alt="Avatar">`;
+        } else {
+            avatarContainer.textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+    });
+
+    // Show logout confirmation modal
+    function logout() {
+        document.getElementById('logoutModal').classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    // Close logout modal
+    function closeLogoutModal() {
+        document.getElementById('logoutModal').classList.remove('active');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Confirm and perform logout
+    function confirmLogout() {
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('isLoggedIn');
+
+        window.location.href = '/';
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('logoutModal');
+        if (e.target === modal) {
+            closeLogoutModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('logoutModal');
+            if (modal.classList.contains('active')) {
+                closeLogoutModal();
+            }
+        }
+    });
+
+    function ViewEvent() {
+        window.location.href = '/ViewEvent';
+    }
+
+    function viewSales() {
+        window.location.href = '/tracksales';
+    }
+
+    function viewProfile() {
+        window.location.href = '/userProfile';
+    }
+
+    // QR Scanner Functions
+    function openScanner() {
+        document.getElementById('scannerModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        startCamera();
+    }
+
+    function closeScanner() {
+        stopCamera();
+        document.getElementById('scannerModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        resetScanner();
+    }
+
+    function switchScannerTab(tab) {
+        const tabs = document.querySelectorAll('.scanner-tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+
+        if (tab === 'camera') {
+            document.querySelector('.scanner-tab:first-child').classList.add('active');
+            document.getElementById('cameraTab').classList.add('active');
+            startCamera();
+        } else {
+            document.querySelector('.scanner-tab:last-child').classList.add('active');
+            document.getElementById('manualTab').classList.add('active');
+            stopCamera();
+        }
+
+        resetResult();
+    }
+
+    function startCamera() {
+        if (html5QrCode) {
+            return; // Already started
+        }
+
+        html5QrCode = new Html5Qrcode("qr-reader");
+
+        const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+        };
+
+        html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            onScanSuccess,
+            onScanError
+        ).catch(err => {
+            console.error("Camera start error:", err);
+            alert("Unable to access camera. Please check permissions or use manual entry.");
+        });
+    }
+
+    function stopCamera() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode = null;
+            }).catch(err => {
+                console.error("Error stopping camera:", err);
+            });
+        }
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log("QR Code scanned:", decodedText);
+        stopCamera();
+        verifyBooking(decodedText);
+    }
+
+    function onScanError(errorMessage) {
+        // Ignore errors (they happen continuously while scanning)
+    }
+
+    function verifyManualBooking() {
+        const bookingId = document.getElementById('manualBookingId').value.trim();
+        if (!bookingId) {
+            alert('Please enter a booking ID');
+            return;
+        }
+        verifyBooking(bookingId);
+    }
+
+    async function verifyBooking(bookingId) {
+        try {
+            // First, get the booking details
+            const bookingResponse = await fetch(`/api/bookings/${bookingId}`);
+
+            if (!bookingResponse.ok) {
+                showResult('error', 'Booking Not Found', 'This booking ID does not exist in our system.');
+                return;
+            }
+
+            const booking = await bookingResponse.json();
+
+            // Check booking status
+            if (booking.status === 'cancelled') {
+                showResult('error', 'Booking Cancelled', 'This booking has been cancelled and is not valid.');
+                return;
+            }
+
+            if (booking.status === 'used') {
+                showResult('error', 'Already Used', 'This ticket has already been scanned and used.', booking);
+                return;
+            }
+
+            if (booking.status === 'confirmed') {
+                // Mark as used
+                const updateResponse = await fetch(`/api/bookings/${bookingId}/use`, {
+                    method: 'PUT'
+                });
+
+                if (updateResponse.ok) {
+                    showResult('success', 'Ticket Verified!', 'Entry granted. Ticket marked as used.', booking);
+                } else {
+                    throw new Error('Failed to update booking status');
+                }
+            }
+
+        } catch (error) {
+            console.error('Verification error:', error);
+            showResult('error', 'Verification Failed', 'Unable to verify this booking. Please try again.');
+        }
+    }
+
+    async function showResult(type, title, message, booking = null) {
+        const resultSection = document.getElementById('resultSection');
+        const resultIcon = document.getElementById('resultIcon');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultMessage = document.getElementById('resultMessage');
+        const bookingDetailsDiv = document.getElementById('bookingDetails');
+
+        resultSection.className = 'result-section show';
+        if (type === 'success') {
+            resultSection.classList.add('result-success');
+            resultIcon.textContent = '✅';
+        } else {
+            resultSection.classList.add('result-error');
+            resultIcon.textContent = '❌';
+        }
+
+        resultTitle.textContent = title;
+        resultMessage.textContent = message;
+
+        if (booking) {
+            // Fetch event details
+            let eventName = 'Event';
+            try {
+                const eventResponse = await fetch(`/api/events/${booking.eventId}`);
+                if (eventResponse.ok) {
+                    const event = await eventResponse.json();
+                    eventName = event.name;
+                }
+            } catch (error) {
+                console.error('Error fetching event:', error);
+            }
+
+            const seatsSummary = booking.seats.map(s => `${s.seatType}-${s.seatNumber}`).join(', ');
+
+            bookingDetailsDiv.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Event:</span>
+                    <span class="detail-value">${eventName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Guest:</span>
+                    <span class="detail-value">${booking.userName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Seats:</span>
+                    <span class="detail-value">${seatsSummary}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Tickets:</span>
+                    <span class="detail-value">${booking.seats.length}</span>
+                </div>
+            `;
+            bookingDetailsDiv.style.display = 'block';
+        } else {
+            bookingDetailsDiv.style.display = 'none';
+        }
+    }
+
+    function scanAnother() {
+        resetScanner();
+        switchScannerTab('camera');
+    }
+
+    function resetScanner() {
+        document.getElementById('manualBookingId').value = '';
+        resetResult();
+    }
+
+    function resetResult() {
+        document.getElementById('resultSection').classList.remove('show');
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('scannerModal');
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeScanner();
+            }
+        });
+    });
+</script>
+</body>
+</html>

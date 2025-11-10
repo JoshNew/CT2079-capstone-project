@@ -1,0 +1,1045 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Organizers - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #f0f0f0;
+        }
+
+        /* Loading and Error States */
+        .loading, .error-message, .no-data {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            color: #e74c3c;
+        }
+
+        .no-data {
+            color: #666;
+        }
+
+        /* User Cards */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-card-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-header-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-status {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .user-card-body {
+            padding: 1.5rem;
+        }
+
+        .user-info-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-info-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #333;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .user-card-actions {
+            padding: 1rem 1.5rem;
+            background: #f8f9fc;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Success Message */
+        .success-banner {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 1px solid #c3e6cb;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .success-banner.show {
+            display: flex;
+        }
+
+        .close-banner {
+            background: none;
+            border: none;
+            color: #155724;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .modal-message {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .modal-user-info {
+            background: #f8f9fc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .modal-user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-user-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-modal-confirm {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modal-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-modal-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-modal-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-modal-reject:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-modal-cancel {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .btn-modal-confirm {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Manage Organizers</div>
+        <div class="header-actions">
+            <a href="/admin-dashboard" class="back-btn">⬅ Back to Dashboard</a>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="page-header">
+        <h1 class="page-title">Organizer Management</h1>
+        <p class="page-subtitle">Approve or reject organizer requests and manage existing organizers</p>
+    </div>
+
+    <div id="successBanner" class="success-banner">
+        <span id="successMessage"></span>
+        <button class="close-banner" onclick="hideSuccessBanner()">X</button>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+        <div class="stat-box">
+            <div class="stat-number" id="pendingCount">0</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="approvedCount">0</div>
+            <div class="stat-label">Active Organizers</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="totalCount">0</div>
+            <div class="stat-label">Total</div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('pending')">
+            Pending Requests
+        </button>
+        <button class="tab-btn" onclick="switchTab('approved')">
+            Active Organizers
+        </button>
+        <button class="tab-btn" onclick="switchTab('all')">
+            All
+        </button>
+    </div>
+
+    <div id="loadingMessage" class="loading">
+        Loading users...
+    </div>
+
+    <div id="errorMessage" class="error-message" style="display: none;">
+        <strong>Error:</strong> <span id="errorText">Unable to load user data.</span>
+        <br><br>
+        <button class="btn btn-view" onclick="loadUsers()">Retry</button>
+    </div>
+
+    <div id="noDataMessage" class="no-data" style="display: none;">
+        No users found in this category.
+    </div>
+
+    <div id="usersGrid" class="users-grid" style="display: none;">
+        <!-- User cards will be inserted here -->
+    </div>
+</main>
+
+<!-- Approve User Modal -->
+<div id="approveModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-icon">✅</div>
+        <h2 class="modal-title">Approve Organizer</h2>
+        <p class="modal-message">
+            Are you sure you want to approve this user as an organizer?
+        </p>
+        <div class="modal-user-info">
+            <div class="modal-user-name" id="approveUserName"></div>
+            <div class="modal-user-email" id="approveUserEmail"></div>
+        </div>
+        <p class="modal-message" style="margin-top: 0; font-size: 0.9rem;">
+            They will be able to create and manage events on the platform.
+        </p>
+        <div class="modal-actions">
+            <button class="btn-modal-confirm btn-modal-approve" onclick="confirmApprove()">
+                Yes, Approve
+            </button>
+            <button class="btn-modal-confirm btn-modal-cancel" onclick="closeApproveModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Reject User Modal -->
+<div id="rejectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-icon">❌</div>
+        <h2 class="modal-title">Reject Request</h2>
+        <p class="modal-message">
+            Are you sure you want to reject this organizer request?
+        </p>
+        <div class="modal-user-info">
+            <div class="modal-user-name" id="rejectUserName"></div>
+            <div class="modal-user-email" id="rejectUserEmail"></div>
+        </div>
+        <p class="modal-message" style="margin-top: 0; font-size: 0.9rem;">
+            This will change them back to a regular customer account.
+        </p>
+        <div class="modal-actions">
+            <button class="btn-modal-confirm btn-modal-reject" onclick="confirmReject()">
+                Yes, Reject
+            </button>
+            <button class="btn-modal-confirm btn-modal-cancel" onclick="closeRejectModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Revoke Organizer Modal -->
+<div id="revokeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+        <h2 class="modal-title">Revoke Organizer Access</h2>
+        <p class="modal-message">
+            Are you sure you want to revoke organizer privileges?
+        </p>
+        <div class="modal-user-info">
+            <div class="modal-user-name" id="revokeUserName"></div>
+            <div class="modal-user-email" id="revokeUserEmail"></div>
+        </div>
+        <p class="modal-message" style="margin-top: 0; font-size: 0.9rem;">
+            They will be changed to a regular customer and lose access to their events.
+        </p>
+        <div class="modal-actions">
+            <button class="btn-modal-confirm btn-modal-reject" onclick="confirmRevoke()">
+                Yes, Revoke Access
+            </button>
+            <button class="btn-modal-confirm btn-modal-cancel" onclick="closeRevokeModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allUsers = [];
+    let currentTab = 'pending';
+    let pendingAction = null; // Store current action details
+
+    // Load users on page load
+    window.addEventListener('load', function() {
+        // Check if admin is logged in
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const userData = sessionStorage.getItem('user');
+
+        if (!isLoggedIn || !userData) {
+            window.location.href = '/';
+            return;
+        }
+
+        const user = JSON.parse(userData);
+
+        // Check if user is admin (role 1)
+        if (user.role !== 1) {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = '/';
+            return;
+        }
+
+        loadUsers();
+    });
+
+    async function loadUsers() {
+        try {
+            document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('noDataMessage').style.display = 'none';
+            document.getElementById('usersGrid').style.display = 'none';
+
+            const response = await fetch('/api/users');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+
+            const users = await response.json();
+
+            // Filter users with role 3 (Organizer) or role 4 (Pending)
+            allUsers = users.filter(user => user.role === 3 || user.role === 4);
+
+            updateStats();
+            displayUsers();
+
+        } catch (error) {
+            console.error('Error loading users:', error);
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('errorText').textContent = error.message;
+        }
+    }
+
+    function updateStats() {
+        const pendingUsers = allUsers.filter(u => u.role === 4);
+        const approvedUsers = allUsers.filter(u => u.role === 3);
+
+        document.getElementById('pendingCount').textContent = pendingUsers.length;
+        document.getElementById('approvedCount').textContent = approvedUsers.length;
+        document.getElementById('totalCount').textContent = allUsers.length;
+    }
+
+    function displayUsers() {
+        document.getElementById('loadingMessage').style.display = 'none';
+
+        let filteredUsers = [];
+
+        if (currentTab === 'pending') {
+            filteredUsers = allUsers.filter(u => u.role === 4);
+        } else if (currentTab === 'approved') {
+            filteredUsers = allUsers.filter(u => u.role === 3);
+        } else {
+            filteredUsers = allUsers;
+        }
+
+        if (filteredUsers.length === 0) {
+            document.getElementById('noDataMessage').style.display = 'block';
+            document.getElementById('usersGrid').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('noDataMessage').style.display = 'none';
+        document.getElementById('usersGrid').style.display = 'grid';
+
+        const usersGrid = document.getElementById('usersGrid');
+        usersGrid.innerHTML = '';
+
+        filteredUsers.forEach(user => {
+            const userCard = createUserCard(user);
+            usersGrid.appendChild(userCard);
+        });
+    }
+
+    function createUserCard(user) {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+
+        const isPending = user.role === 4;
+        const statusText = isPending ? 'Pending Approval' : 'Active Organizer';
+        const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+        // Get user ID
+        let userId = user.id || (user._id && (user._id.$oid || user._id)) || '';
+
+        card.innerHTML = `
+                <div class="user-card-header">
+                    <div class="user-avatar">${firstLetter}</div>
+                    <div class="user-header-info">
+                        <div class="user-name">${user.name || 'Unknown'}</div>
+                        <span class="user-status">${statusText}</span>
+                    </div>
+                </div>
+                <div class="user-card-body">
+                    <div class="user-info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">${user.email || '-'}</span>
+                    </div>
+                    <div class="user-info-row">
+                        <span class="info-label">User ID:</span>
+                        <span class="info-value">${userId || '-'}</span>
+                    </div>
+                    <div class="user-info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">${statusText}</span>
+                    </div>
+                </div>
+                <div class="user-card-actions">
+                    ${isPending ? `
+                        <button class="btn btn-approve" onclick='approveUser("${userId}", "${user.name}", "${user.email}")'>
+                            ✓ Approve
+                        </button>
+                        <button class="btn btn-reject" onclick='rejectUser("${userId}", "${user.name}", "${user.email}")'>
+                            ✗ Reject
+                        </button>
+                    ` : `
+                        <button class="btn btn-reject" onclick='revokeOrganizer("${userId}", "${user.name}", "${user.email}")'>
+                            Revoke Access
+                        </button>
+                    `}
+                </div>
+            `;
+
+        return card;
+    }
+
+    // Approve User Functions
+    function approveUser(userId, userName, userEmail) {
+        pendingAction = {
+            type: 'approve',
+            userId: userId,
+            userName: userName,
+            userEmail: userEmail
+        };
+
+        document.getElementById('approveUserName').textContent = userName;
+        document.getElementById('approveUserEmail').textContent = userEmail;
+        document.getElementById('approveModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeApproveModal() {
+        document.getElementById('approveModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        pendingAction = null;
+    }
+
+    async function confirmApprove() {
+        if (!pendingAction || pendingAction.type !== 'approve') return;
+
+        const { userId, userName } = pendingAction;
+        closeApproveModal();
+
+        try {
+            // Get the full user data first
+            const userResponse = await fetch(`/api/users/${userId}`);
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+
+            const userData = await userResponse.json();
+
+            // Update user role to 3 (Organizer)
+            const updateData = {
+                name: userData.name,
+                email: userData.email,
+                password: userData.password,
+                role: 3
+            };
+
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (response.ok) {
+                showSuccess(`${userName} has been approved as an organizer!`);
+                await loadUsers();
+            } else {
+                throw new Error('Failed to approve user');
+            }
+        } catch (error) {
+            console.error('Error approving user:', error);
+            alert('Failed to approve user: ' + error.message);
+        } finally {
+            pendingAction = null;
+        }
+    }
+
+    // Reject User Functions
+    function rejectUser(userId, userName, userEmail) {
+        pendingAction = {
+            type: 'reject',
+            userId: userId,
+            userName: userName,
+            userEmail: userEmail
+        };
+
+        document.getElementById('rejectUserName').textContent = userName;
+        document.getElementById('rejectUserEmail').textContent = userEmail;
+        document.getElementById('rejectModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        pendingAction = null;
+    }
+
+    async function confirmReject() {
+        if (!pendingAction || pendingAction.type !== 'reject') return;
+
+        const { userId, userName } = pendingAction;
+        closeRejectModal();
+
+        try {
+            // Get the full user data first
+            const userResponse = await fetch(`/api/users/${userId}`);
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+
+            const userData = await userResponse.json();
+
+            // Update user role to 2 (Customer)
+            const updateData = {
+                name: userData.name,
+                email: userData.email,
+                password: userData.password,
+                role: 2
+            };
+
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (response.ok) {
+                showSuccess(`${userName}'s request has been rejected.`);
+                await loadUsers();
+            } else {
+                throw new Error('Failed to reject user');
+            }
+        } catch (error) {
+            console.error('Error rejecting user:', error);
+            alert('Failed to reject user: ' + error.message);
+        } finally {
+            pendingAction = null;
+        }
+    }
+
+    // Revoke Organizer Functions
+    function revokeOrganizer(userId, userName, userEmail) {
+        pendingAction = {
+            type: 'revoke',
+            userId: userId,
+            userName: userName,
+            userEmail: userEmail
+        };
+
+        document.getElementById('revokeUserName').textContent = userName;
+        document.getElementById('revokeUserEmail').textContent = userEmail;
+        document.getElementById('revokeModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRevokeModal() {
+        document.getElementById('revokeModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        pendingAction = null;
+    }
+
+    async function confirmRevoke() {
+        if (!pendingAction || pendingAction.type !== 'revoke') return;
+
+        const { userId, userName } = pendingAction;
+        closeRevokeModal();
+
+        try {
+            // Get the full user data first
+            const userResponse = await fetch(`/api/users/${userId}`);
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+
+            const userData = await userResponse.json();
+
+            // Update user role to 2 (Customer)
+            const updateData = {
+                name: userData.name,
+                email: userData.email,
+                password: userData.password,
+                role: 2
+            };
+
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (response.ok) {
+                showSuccess(`Organizer privileges revoked for ${userName}.`);
+                await loadUsers();
+            } else {
+                throw new Error('Failed to revoke organizer');
+            }
+        } catch (error) {
+            console.error('Error revoking organizer:', error);
+            alert('Failed to revoke organizer: ' + error.message);
+        } finally {
+            pendingAction = null;
+        }
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+
+        // Update active tab button
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        displayUsers();
+    }
+
+    function showSuccess(message) {
+        const banner = document.getElementById('successBanner');
+        const messageEl = document.getElementById('successMessage');
+
+        messageEl.textContent = message;
+        banner.classList.add('show');
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            hideSuccessBanner();
+        }, 5000);
+    }
+
+    function hideSuccessBanner() {
+        document.getElementById('successBanner').classList.remove('show');
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(e) {
+        const approveModal = document.getElementById('approveModal');
+        const rejectModal = document.getElementById('rejectModal');
+        const revokeModal = document.getElementById('revokeModal');
+
+        if (e.target === approveModal) {
+            closeApproveModal();
+        }
+        if (e.target === rejectModal) {
+            closeRejectModal();
+        }
+        if (e.target === revokeModal) {
+            closeRevokeModal();
+        }
+    });
+</script>
+</body>
+</html>

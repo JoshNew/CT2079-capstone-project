@@ -1,0 +1,791 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Event Ease</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .positive { color: #10b981; }
+        .negative { color: #ef4444; }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-icon {
+            font-size: 1.3rem;
+        }
+
+        /* Recent Bookings Section */
+        .recent-bookings {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .booking-item {
+            padding: 1.5rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .booking-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .booking-event-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .booking-date {
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .booking-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-used {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .booking-details {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .booking-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #667eea;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .welcome-section,
+            .quick-actions,
+            .recent-bookings {
+                padding: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .booking-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Logout Confirmation Modal */
+        .logout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .logout-modal.active {
+            display: flex;
+        }
+
+        .logout-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .logout-modal-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .logout-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .logout-modal-message {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .logout-modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .logout-modal-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-modal-btn-cancel {
+            background: #f1f3f5;
+            color: #495057;
+        }
+
+        .logout-modal-btn-cancel:hover {
+            background: #e9ecef;
+        }
+
+        .logout-modal-btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .logout-modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Customer Dashboard</div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar"></div>
+            <span id="userName"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <section class="welcome-section">
+        <h1 class="welcome-title" id="welcomeTitle">Welcome back!</h1>
+        <p class="welcome-subtitle">Discover amazing events and manage your bookings.</p>
+    </section>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Total Bookings</span>
+                <div class="stat-icon" style="background: #e0f2fe;">🎫</div>
+            </div>
+            <div class="stat-number" id="totalBookings">0</div>
+            <div class="stat-change positive" id="bookingsChange">Loading...</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Upcoming Events</span>
+                <div class="stat-icon" style="background: #fff3e0;">🗓️</div>
+            </div>
+            <div class="stat-number" id="upcomingEvents">0</div>
+            <div class="stat-change" id="upcomingChange">This month</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Total Spent</span>
+                <div class="stat-icon" style="background: #f3e5f5;">💰</div>
+            </div>
+            <div class="stat-number" id="totalSpent">$0</div>
+            <div class="stat-change" id="spentChange">All time</div>
+        </div>
+    </section>
+
+    <section class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="actions-grid">
+            <button class="action-btn" onclick="viewAllEvents()">
+                <span class="action-icon">🎉</span>
+                Browse All Events
+            </button>
+            <button class="action-btn" onclick="viewMyBookings()">
+                <span class="action-icon">🎫</span>
+                My Bookings
+            </button>
+            <button class="action-btn" onclick="viewProfile()">
+                <span class="action-icon">👤</span>
+                My Profile
+            </button>
+        </div>
+    </section>
+
+    <section class="recent-bookings">
+        <h2 class="section-title">Recent Bookings</h2>
+
+        <div id="bookingsLoading" class="loading">
+            Loading your bookings...
+        </div>
+
+        <div id="bookingsEmpty" class="empty-state" style="display: none;">
+            <div class="empty-icon">🎫</div>
+            <h3>No bookings yet</h3>
+            <p style="margin-top: 0.5rem;">Start by browsing available events!</p>
+
+        </div>
+
+        <div id="bookingsList" class="booking-list" style="display: none;">
+            <!-- Bookings will be loaded here -->
+        </div>
+
+        <!-- Logout Confirmation Modal -->
+        <div id="logoutModal" class="logout-modal">
+            <div class="logout-modal-content">
+                <div class="logout-modal-icon">👋</div>
+                <h2 class="logout-modal-title">Logout Confirmation</h2>
+                <p class="logout-modal-message">
+                    Are you sure you want to logout?
+                </p>
+                <div class="logout-modal-actions">
+                    <button class="logout-modal-btn logout-modal-btn-cancel" onclick="closeLogoutModal()">
+                        Cancel
+                    </button>
+                    <button class="logout-modal-btn logout-modal-btn-confirm" onclick="confirmLogout()">
+                        Yes, Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    let currentUser = null;
+    let userBookings = [];
+
+    // Load user data and initialize dashboard
+    window.addEventListener('load', function() {
+        // Check if user is logged in
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const userData = sessionStorage.getItem('user');
+
+        if (!isLoggedIn || !userData) {
+            // Redirect to login if not logged in
+            window.location.href = '/';
+            return;
+        }
+
+        // Parse user data
+        currentUser = JSON.parse(userData);
+
+        // Update UI with user info
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('welcomeTitle').textContent = `Welcome back, ${currentUser.name.split(' ')[0]}!`;
+
+        // Set user avatar
+        const avatarContainer = document.getElementById('userAvatar');
+        if (currentUser.avatarImage) {
+            // Display uploaded image
+            avatarContainer.innerHTML = `<img src="${currentUser.avatarImage}" alt="Avatar">`;
+        } else {
+            // Display first letter of name
+            avatarContainer.textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        // Load user bookings
+        loadUserBookings();
+    });
+
+    async function loadUserBookings() {
+        try {
+            const userId = getUserId(currentUser);
+            const response = await fetch(`/api/bookings/user/${userId}`);
+
+            if (response.ok) {
+                userBookings = await response.json();
+                displayBookings();
+                updateStats();
+            } else {
+                throw new Error('Failed to load bookings');
+            }
+
+        } catch (error) {
+            console.error('Error loading bookings:', error);
+            document.getElementById('bookingsLoading').style.display = 'none';
+            document.getElementById('bookingsEmpty').style.display = 'block';
+        }
+    }
+
+    function displayBookings() {
+        document.getElementById('bookingsLoading').style.display = 'none';
+
+        if (userBookings.length === 0) {
+            document.getElementById('bookingsEmpty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('bookingsList').style.display = 'grid';
+
+        const bookingsList = document.getElementById('bookingsList');
+        bookingsList.innerHTML = '';
+
+        // Show only the 5 most recent bookings
+        const recentBookings = userBookings.slice(0, 5);
+
+        recentBookings.forEach(booking => {
+            const bookingItem = createBookingItem(booking);
+            bookingsList.appendChild(bookingItem);
+        });
+    }
+
+    function createBookingItem(booking) {
+        const item = document.createElement('div');
+        item.className = 'booking-item';
+
+        const bookingDate = new Date(booking.bookingDate);
+        const formattedDate = bookingDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        const seatCount = booking.seats.length;
+        const seatSummary = booking.seats.map(s => `${s.seatType}-${s.seatNumber}`).join(', ');
+
+        // Determine status class and text
+        let statusClass = 'status-confirmed';
+        let statusText = booking.status;
+
+        if (booking.status === 'confirmed') {
+            statusClass = 'status-confirmed';
+            statusText = 'confirmed';
+        } else if (booking.status === 'used') {
+            statusClass = 'status-used';
+            statusText = 'used';
+        }else if (booking.status === 'cancelled') {
+            statusClass = 'status-cancelled';
+            statusText = 'cancelled';
+        }
+
+        item.innerHTML = `
+        <div class="booking-header">
+            <div>
+                <div class="booking-event-name">Booking #${booking.id.substring(0, 8)}</div>
+                <div class="booking-date">Booked on ${formattedDate}</div>
+            </div>
+            <span class="booking-status ${statusClass}">${statusText}</span>
+        </div>
+        <div class="booking-details">
+            <div class="booking-detail-item">
+                 <span>🎫</span>
+                <span>${seatCount} ticket${seatCount > 1 ? 's' : ''}</span>
+            </div>
+            <div class="booking-detail-item">
+               <span>💺</span>
+                <span>${seatSummary}</span>
+            </div>
+            <div class="booking-detail-item">
+                   <span>💰</span>
+                <span>$${booking.totalPrice.toFixed(2)}</span>
+            </div>
+            <div class="booking-detail-item">
+                 <span>💳</span>
+                <span>${formatPaymentMethod(booking.paymentMethod)}</span>
+            </div>
+        </div>
+    `;
+
+        return item;
+    }
+
+    function formatPaymentMethod(method) {
+        const methods = {
+            'credit-card': 'Credit Card',
+            'debit-card': 'Debit Card',
+            'paypal': 'PayPal'
+        };
+        return methods[method] || method;
+    }
+
+    function updateStats() {
+        // Total bookings
+        document.getElementById('totalBookings').textContent = userBookings.length;
+        document.getElementById('bookingsChange').textContent = userBookings.length === 0
+            ? 'No bookings yet'
+            : `${userBookings.length} total booking${userBookings.length > 1 ? 's' : ''}`;
+
+        // Calculate upcoming events (confirmed only, not used)
+        const upcomingCount = userBookings.filter(b => b.status === 'confirmed').length;
+        document.getElementById('upcomingEvents').textContent = upcomingCount;
+
+        // Total spent (confirmed + used, not cancelled)
+        const totalSpent = userBookings
+            .filter(b => b.status === 'confirmed' || b.status === 'used')
+            .reduce((sum, b) => sum + b.totalPrice, 0);
+        document.getElementById('totalSpent').textContent = `$${totalSpent.toFixed(2)}`;
+    }
+
+    function getUserId(user) {
+        let userId = user.id;
+        if (!userId && user._id) {
+            if (typeof user._id === 'object' && user._id.$oid) {
+                userId = user._id.$oid;
+            } else if (typeof user._id === 'string') {
+                userId = user._id;
+            }
+        }
+        return userId;
+    }
+
+    // Show logout confirmation modal
+    function logout() {
+        document.getElementById('logoutModal').classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    // Close logout modal
+    function closeLogoutModal() {
+        document.getElementById('logoutModal').classList.remove('active');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Confirm and perform logout
+    function confirmLogout() {
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('isLoggedIn');
+        window.location.href = '/';
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('logoutModal');
+        if (e.target === modal) {
+            closeLogoutModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('logoutModal');
+            if (modal.classList.contains('active')) {
+                closeLogoutModal();
+            }
+        }
+    });
+
+    // Quick action functions
+    function viewAllEvents() {
+        window.location.href = '/AllEvents';
+    }
+
+    function viewMyBookings() {
+        window.location.href = '/MyBooking';
+    }
+
+    function viewProfile() {
+        window.location.href = '/userProfile';
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,508 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Event Ease</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: white;
+        }
+
+        .back-button::before {
+            content: '←';
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .form-group input:hover {
+            border-color: #bbb;
+            background: white;
+        }
+
+        .form-group input.error {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-danger {
+            background-color: #fee;
+            color: #c33;
+            border: 2px solid #fcc;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .error-text {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .back-button {
+                top: 1rem;
+                left: 1rem;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .login-container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+
+            .login-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+        #logoContainer img {
+            max-height: 60px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+
+        /* Booking prompt styling */
+        .booking-prompt {
+            background: linear-gradient(135deg, #E9D502, #E9D502);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .prompt-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .prompt-text {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+<a href="/AllEvents.html" class="back-button">Back to Events</a>
+
+<div class="login-container">
+    <div class="login-box">
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p id="loginSubtitle">Sign in to your account</p>
+            <!-- NEW: Booking prompt -->
+            <div id="bookingPrompt" class="booking-prompt" style="display: none;">
+                <div class="prompt-icon">👨🏻‍💻</div>
+                <p class="prompt-text">Please login or create an account to book tickets</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertMessage" class="alert" style="display: none;">
+        <span id="alertText"></span>
+    </div>
+
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <div id="emailError" class="error-text" style="display: none;"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <div id="passwordError" class="error-text" style="display: none;"></div>
+        </div>
+
+        <button type="submit" class="login-button">Sign In</button>
+    </form>
+
+    <div class="forgot-password">
+        <a href="/reset-password">Forgot your password?</a>
+    </div>
+
+    <div class="signup-link">
+        Don't have an account? <a href="/register">Sign up here</a>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+
+        if (redirectUrl && redirectUrl.includes('booking.html')) {
+            // Show the booking prompt
+            document.getElementById('bookingPrompt').style.display = 'block';
+            // Optionally hide or modify the subtitle
+            document.getElementById('loginSubtitle').style.display = 'none';
+        }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Clear previous errors
+        clearErrors();
+
+        // Get form data
+        const formData = {
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        };
+
+        // Basic validation
+        if (!formData.email || !formData.password) {
+            showAlert('Please fill in all fields.', 'error');
+            return;
+        }
+
+        try {
+            // Show loading state
+            const submitButton = document.querySelector('.login-button');
+            submitButton.textContent = 'Signing In...';
+            submitButton.disabled = true;
+
+            // Send POST request to login API
+            const response = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+
+                // Store user data in sessionStorage
+                sessionStorage.setItem('user', JSON.stringify(userData));
+                sessionStorage.setItem('isLoggedIn', 'true');
+
+                showAlert('Signing in! Welcome back, ' + userData.name, 'success');
+
+                // Redirect based on user role
+                setTimeout(() => {
+                    redirectBasedOnRole(userData.role);
+                }, 1500);
+
+            } else if (response.status === 401) {
+                showAlert('Invalid email or password. Please try again.', 'error');
+            } else {
+                showAlert('Login failed. Please try again later.', 'error');
+            }
+
+        } catch (error) {
+            console.error('Login error:', error);
+            showAlert('Network error. Please check your connection and try again.', 'error');
+        } finally {
+            // Reset button state
+            const submitButton = document.querySelector('.login-button');
+            submitButton.textContent = 'Sign In';
+            submitButton.disabled = false;
+        }
+    });
+
+    //incase i forget cause i am old.
+    // 1 = admin, 2 = customer, 3 = organizer, 4 = pending organizer
+    function redirectBasedOnRole(role) {
+        const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+
+        if (redirectUrl) {
+            // Clear the redirect URL from storage
+            sessionStorage.removeItem('redirectAfterLogin');
+            // Redirect back to the booking page
+            window.location.href = redirectUrl;
+            return;
+        }
+
+        switch(role) {
+            case 1:
+                window.location.href = '/admin-dashboard';
+                break;
+            case 2:
+                window.location.href = '/customer-dashboard';
+                break;
+            case 3:
+                window.location.href = '/organizer-dashboard';
+                break;
+            case 4:
+                window.location.href = '/customer-dashboard';
+                break;
+            default:
+                window.location.href = '/AllEvents';
+        }
+    }
+
+    function showAlert(message, type) {
+        const alertDiv = document.getElementById('alertMessage');
+        const alertText = document.getElementById('alertText');
+
+        alertText.textContent = message;
+        alertDiv.className = type === 'success' ? 'alert alert-success' : 'alert alert-danger';
+        alertDiv.style.display = 'block';
+
+        // Auto-hide after 5 seconds for error messages
+        if (type === 'error') {
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    function showFieldError(fieldName, message) {
+        const errorDiv = document.getElementById(fieldName + 'Error');
+        const inputField = document.getElementById(fieldName);
+
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        inputField.classList.add('error');
+    }
+
+    function clearErrors() {
+        const errorDivs = document.querySelectorAll('.error-text');
+        const inputs = document.querySelectorAll('input');
+
+        errorDivs.forEach(div => {
+            div.style.display = 'none';
+            div.textContent = '';
+        });
+
+        inputs.forEach(input => {
+            input.classList.remove('error');
+        });
+
+        // Hide alert message
+        document.getElementById('alertMessage').style.display = 'none';
+    }
+
+    // Load logo from database
+    async function loadLogo() {
+        try {
+            const response = await fetch('/api/logo');
+            if (response.ok) {
+                const logo = await response.json();
+                if (logo && logo.imageData) {
+                    const logoContainer = document.getElementById('logoContainer');
+                    logoContainer.innerHTML = `<img src="${logo.imageData}" alt="Event Ease Logo">`;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading logo:', error);
+        }
+    }
+
+    // Call loadLogo when page loads
+    window.addEventListener('DOMContentLoaded', loadLogo);
+</script>
+</body>
+</html>

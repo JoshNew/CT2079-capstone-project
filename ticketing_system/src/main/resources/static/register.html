@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Event Ease</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: white;
+        }
+
+        .back-button::before {
+            content: '←';
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .register-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-header h1 {
+            color: #333;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .register-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .form-group input:hover {
+            border-color: #bbb;
+            background: white;
+        }
+
+        .form-group input.error {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .form-group small {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: block;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        .register-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-danger {
+            background-color: #fee;
+            color: #c33;
+            border: 2px solid #fcc;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .error-text {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .back-button {
+                top: 1rem;
+                left: 1rem;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .register-container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+
+            .register-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+        #logoContainer img {
+            max-height: 60px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+<a href="/AllEvents.html" class="back-button">Back to Events</a>
+
+<div class="register-container">
+    <div class="register-header">
+        <h1 id="logoContainer">Event Ease</h1>
+        <p>Create your account to get started</p>
+    </div>
+
+    <div id="alertMessage" class="alert" style="display: none;">
+        <span id="alertText"></span>
+    </div>
+
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            <div id="nameError" class="error-text" style="display: none;"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <div id="emailError" class="error-text" style="display: none;"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Create a password" required>
+            <div id="passwordError" class="error-text" style="display: none;"></div>
+            <small>Password must be at least 6 characters long</small>
+        </div>
+
+        <button type="submit" class="register-button">Create Account</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="/login">Sign in here</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Clear previous errors
+        clearErrors();
+
+        // Get form data
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            role: 2
+        };
+
+        // Basic validation
+        if (formData.password.length < 6) {
+            showFieldError('password', 'Password must be at least 6 characters long');
+            return;
+        }
+
+        try {
+            // Show loading state
+            const submitButton = document.querySelector('.register-button');
+            submitButton.textContent = 'Creating Account...';
+            submitButton.disabled = true;
+
+            // Send POST request to API
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                showAlert('Account created successfully!', 'success');
+
+                // Clear form
+                document.getElementById('registerForm').reset();
+
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+
+            } else if (response.status === 409) {
+                showAlert('Email address is already registered. Please use a different email.', 'error');
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                showAlert('Registration failed. Please try again.', 'error');
+            }
+
+        } catch (error) {
+            console.error('Registration error:', error);
+            showAlert('Network error. Please check your connection and try again.', 'error');
+        } finally {
+            // Reset button state
+            const submitButton = document.querySelector('.register-button');
+            submitButton.textContent = 'Create Account';
+            submitButton.disabled = false;
+        }
+    });
+
+    function showAlert(message, type) {
+        const alertDiv = document.getElementById('alertMessage');
+        const alertText = document.getElementById('alertText');
+
+        alertText.textContent = message;
+        alertDiv.className = type === 'success' ? 'alert alert-success' : 'alert alert-danger';
+        alertDiv.style.display = 'block';
+
+        // Auto-hide after 5 seconds for error messages
+        if (type === 'error') {
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    function showFieldError(fieldName, message) {
+        const errorDiv = document.getElementById(fieldName + 'Error');
+        const inputField = document.getElementById(fieldName);
+
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        inputField.classList.add('error');
+    }
+
+    function clearErrors() {
+        const errorDivs = document.querySelectorAll('.error-text');
+        const inputs = document.querySelectorAll('input');
+
+        errorDivs.forEach(div => {
+            div.style.display = 'none';
+            div.textContent = '';
+        });
+
+        inputs.forEach(input => {
+            input.classList.remove('error');
+        });
+
+        // Hide alert message
+        document.getElementById('alertMessage').style.display = 'none';
+    }
+    // Load logo from database
+    async function loadLogo() {
+        try {
+            const response = await fetch('/api/logo');
+            if (response.ok) {
+                const logo = await response.json();
+                if (logo && logo.imageData) {
+                    const logoContainer = document.getElementById('logoContainer');
+                    logoContainer.innerHTML = `<img src="${logo.imageData}" alt="Event Ease Logo">`;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading logo:', error);
+        }
+    }
+
+    // Call loadLogo when page loads
+    window.addEventListener('DOMContentLoaded', loadLogo);
+
+</script>
+</body>
+</html>
